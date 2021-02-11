@@ -1,0 +1,3 @@
+[submodule "ext/embedFiglet"]
+	path = ext/embedFiglet
+	url = https://github.com/ebertolazzi/embedFiglet.git
