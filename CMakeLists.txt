@@ -1,19 +1,19 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10.2)
 
-project(oneMD VERSION 0.1 DESCRIPTION "Molecular Dynamics simulator for Intel oneAPI." LANGUAGES CXX)
+project(oneMD DESCRIPTION "Molecular Dynamics simulator for Intel oneAPI." LANGUAGES CXX)
 
 add_subdirectory(ext/embedFiglet)
 
-add_library(embedFiglet STATIC IMPORTED)
-set_target_properties(embedFiglet PROPERTIES
-    IMPORTED_LOCATION "ext/embedFiglet/Debug/embedFiglet_win__static.lib"
+set (FIGLET 
+    ext/embedFiglet/src/Figlet.hh 
+    ext/embedFiglet/src/Figlet.cc
+    ext/embedFiglet/src/Figlet_Font_standard.cc
+    ext/embedFiglet/src/Figlet_Font_small.cc
 )
-
-set(HEADERS ext/embedFiglet/src/Figlet.hh)
 set (SOURCE src/main.cpp)
-add_executable(main ${HEADERS} ${SOURCE})
+add_executable(main ${FIGLET} ${SOURCE})
 target_include_directories(main PUBLIC ext/embedFiglet/src)
-target_link_libraries(main embedFiglet)
+
 MESSAGE( STATUS "Using ${SSE_FLAGS} extensions")
 MESSAGE( STATUS "C compiler                  = ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER}" )
 MESSAGE( STATUS "C++ compiler                = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )
