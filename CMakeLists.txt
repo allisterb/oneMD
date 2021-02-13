@@ -2,8 +2,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.10.2)
 
 project(oneMD DESCRIPTION "Molecular Dynamics simulator for Intel oneAPI." LANGUAGES CXX)
 
-add_subdirectory(ext/embedFiglet)
-
 set (FIGLET 
     ext/embedFiglet/src/Figlet.hh 
     ext/embedFiglet/src/Figlet.cc
