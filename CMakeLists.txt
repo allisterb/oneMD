@@ -10,7 +10,8 @@ set (FIGLET
 )
 set (SOURCE src/main.cpp)
 add_executable(main ${FIGLET} ${SOURCE})
-target_include_directories(main PUBLIC ext/embedFiglet/src)
+target_compile_features(main PRIVATE cxx_std_17)
+target_include_directories(main PRIVATE ext/embedFiglet/src)
 
 MESSAGE( STATUS "Using ${SSE_FLAGS} extensions")
 MESSAGE( STATUS "C compiler                  = ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER}" )
