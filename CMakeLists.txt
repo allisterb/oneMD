@@ -10,7 +10,6 @@ set (FIGLET
 )
 set (SOURCE src/main.cpp)
 add_executable(main ${FIGLET} ${SOURCE})
-target_compile_features(main PRIVATE cxx_std_17)
 target_include_directories(main PRIVATE ext/embedFiglet/src)
 
 MESSAGE( STATUS "Using ${SSE_FLAGS} extensions")
