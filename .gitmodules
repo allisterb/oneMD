@@ -1,3 +1,6 @@
 [submodule "ext/embedFiglet"]
 	path = ext/embedFiglet
 	url = https://github.com/ebertolazzi/embedFiglet.git
+[submodule "ext/spdlog"]
+	path = ext/spdlog
+	url = https://github.com/gabime/spdlog.git
