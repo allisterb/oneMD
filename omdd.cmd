@@ -1,2 +1,2 @@
 @echo off
-build\Debug\onemd.exe
+build\Debug\onemdd.exe

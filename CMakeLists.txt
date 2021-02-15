@@ -6,6 +6,12 @@ find_package (Threads REQUIRED)
 
 add_subdirectory(ext/spdlog)
 
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+  set(TGT onemdd)
+else()
+  set(TGT onemd)
+endif() 
+
 set (EXT_SRC 
     ext/embedFiglet/src/Figlet.cc
     ext/embedFiglet/src/Figlet_Font_standard.cc
@@ -19,10 +25,10 @@ set (EXT_SRC
     ext/spdlog/src/stdout_sinks.cpp
 )
 set (SRC src/main.cpp src/Simulator.hh)
-add_executable(onemd ${EXT_SRC} ${SRC})
-target_include_directories(onemd PRIVATE ext/embedFiglet/src ext/spdlog/include)
-target_compile_definitions(onemd PRIVATE SPDLOG_COMPILED_LIB=1)
-target_link_libraries(onemd PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+add_executable(${TGT} ${EXT_SRC} ${SRC})
+target_include_directories(${TGT} PRIVATE ext/embedFiglet/src ext/spdlog/include)
+target_compile_definitions(${TGT} PRIVATE SPDLOG_COMPILED_LIB=1)
+target_link_libraries(${TGT} PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
 MESSAGE( STATUS "Using ${SSE_FLAGS} extensions")
 MESSAGE( STATUS "C++ compiler                = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )
