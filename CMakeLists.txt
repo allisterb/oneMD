@@ -2,6 +2,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.10.2)
 
 project(oneMD DESCRIPTION "Molecular Dynamics simulator for Intel oneAPI." LANGUAGES CXX)
 
+find_package (Threads REQUIRED)
+
 add_subdirectory(ext/spdlog)
 
 set (FIGLET 
@@ -21,6 +23,7 @@ set (SOURCE src/main.cpp)
 add_executable(main ${FIGLET} ${SOURCE})
 target_include_directories(main PRIVATE ext/embedFiglet/src ext/spdlog/include)
 target_compile_definitions(main PRIVATE SPDLOG_COMPILED_LIB=1)
+target_link_libraries(main  PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
 MESSAGE( STATUS "Using ${SSE_FLAGS} extensions")
 MESSAGE( STATUS "C compiler                  = ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER}" )
