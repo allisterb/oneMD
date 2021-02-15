@@ -19,10 +19,10 @@ set (EXT_SRC
     ext/spdlog/src/stdout_sinks.cpp
 )
 set (SRC src/main.cpp src/Simulator.hh)
-add_executable(main ${EXT_SRC} ${SRC})
-target_include_directories(main PRIVATE ext/embedFiglet/src ext/spdlog/include)
-target_compile_definitions(main PRIVATE SPDLOG_COMPILED_LIB=1)
-target_link_libraries(main PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+add_executable(onemd ${EXT_SRC} ${SRC})
+target_include_directories(onemd PRIVATE ext/embedFiglet/src ext/spdlog/include)
+target_compile_definitions(onemd PRIVATE SPDLOG_COMPILED_LIB=1)
+target_link_libraries(onemd PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
 MESSAGE( STATUS "Using ${SSE_FLAGS} extensions")
 MESSAGE( STATUS "C++ compiler                = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )

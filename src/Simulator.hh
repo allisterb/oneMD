@@ -14,7 +14,6 @@ class Simulator {
     double cpu_time ( );
     void r8mat_uniform_ab ( int m, int n, double a, double b, int &seed, double r[] );
     void timestamp ( );
-
 };
 
-#endif
+#endif // __SIMULATOR_H__
