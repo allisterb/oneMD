@@ -99,7 +99,7 @@ int main ( int argc, char *argv[] )
   double *vel;
 
 
-  info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
+  info("Welcome to oneMD. The default simulator by jburkardt is now active.");
 
   timestamp ( );
   cout << "\n";
