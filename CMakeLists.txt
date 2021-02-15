@@ -6,8 +6,7 @@ find_package (Threads REQUIRED)
 
 add_subdirectory(ext/spdlog)
 
-set (FIGLET 
-    ext/embedFiglet/src/Figlet.hh 
+set (EXT_SRC 
     ext/embedFiglet/src/Figlet.cc
     ext/embedFiglet/src/Figlet_Font_standard.cc
     ext/embedFiglet/src/Figlet_Font_small.cc
@@ -19,11 +18,11 @@ set (FIGLET
     ext/spdlog/src/spdlog.cpp
     ext/spdlog/src/stdout_sinks.cpp
 )
-set (SOURCE src/main.cpp)
-add_executable(main ${FIGLET} ${SOURCE})
+set (SRC src/main.cpp src/Simulator.hh)
+add_executable(main ${EXT_SRC} ${SRC})
 target_include_directories(main PRIVATE ext/embedFiglet/src ext/spdlog/include)
 target_compile_definitions(main PRIVATE SPDLOG_COMPILED_LIB=1)
-target_link_libraries(main  PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(main PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
 MESSAGE( STATUS "Using ${SSE_FLAGS} extensions")
 MESSAGE( STATUS "C++ compiler                = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )
@@ -36,4 +35,3 @@ IF(APPLE)
   MESSAGE( STATUS "CMAKE_OSX_ARCHITECTURES     = ${CMAKE_OSX_ARCHITECTURES}" )
   MESSAGE( STATUS "CMAKE_OSX_DEPLOYMENT_TARGET = ${CMAKE_OSX_DEPLOYMENT_TARGET}" )
 ENDIF()
-MESSAGE( STATUS "BUILD_EXECUTABLE            = ${BUILD_EXECUTABLE}" )

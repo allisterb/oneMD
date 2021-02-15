@@ -1,6 +1,8 @@
 @echo off
-git fetch
-git pull
+echo Building oneMD in release mode...
+if not exist build\ (
+    mkdir build
+)
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cd ..

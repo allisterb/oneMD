@@ -12,19 +12,7 @@
 using namespace std;
 using namespace spdlog;
 
-int
-figlet_demo() {
-  Figlet::standard.print("Fractions");
-  for ( int i = 2; i <= 4; ++i ) {
-    ostringstream ss;
-    ss << "5/" << i << " = " << 5.0/i;
-    Figlet::small.print(ss.str().c_str());
-  }
-  cout << "ALL DONE!\n";
-  return 0;
-}
-
-int main ( int argc, char *argv[] );
+int cpu ( int argc, char *argv[] );
 void compute ( int np, int nd, double pos[], double vel[], 
   double mass, double f[], double &pot, double &kin );
 double cpu_time ( );
@@ -37,7 +25,7 @@ void update ( int np, int nd, double pos[], double vel[], double f[],
 
 //****************************************************************************80
 
-int main ( int argc, char *argv[] )
+int cpu ( int argc, char *argv[] )
 
 //****************************************************************************80
 //

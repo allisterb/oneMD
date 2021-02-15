@@ -1,7 +1,10 @@
 #! /bin/bash
 set -e
-git fetch
-git pull
+echo Building oneMD in release mode...
+if [ ! -d "build" ] 
+then
+    mkdir build
+fi
 cd build
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 cd ..
