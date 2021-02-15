@@ -6,8 +6,26 @@
 #include <sstream>
 
 #include "Figlet.hh"
+void load_levels_example();
+void stdout_logger_example();
+void basic_example();
+void rotating_example();
+void daily_example();
+void async_example();
+void binary_example();
+void stopwatch_example();
+void trace_example();
+void multi_sink_example();
+void user_defined_example();
+void err_handler_example();
+void syslog_example();
+void custom_flags_example();
+
+#include "spdlog/spdlog.h"
+#include "spdlog/cfg/env.h" // support for loading levels from the environment variable
 
 using namespace std;
+
 
 int
 figlet_demo() {
@@ -76,6 +94,7 @@ int main ( int argc, char *argv[] )
 //    John Burkardt.
 //
 {
+  
   double *acc;
   double ctime;
   double dt;
@@ -93,6 +112,9 @@ int main ( int argc, char *argv[] )
   int step_print_index;
   int step_print_num;
   double *vel;
+
+
+    spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 
   timestamp ( );
   cout << "\n";
