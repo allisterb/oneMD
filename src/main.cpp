@@ -98,7 +98,7 @@ int main ( int argc, char *argv[] )
   int step_print_num;
   double *vel;
 
-
+  Figlet::standard.print("oneMD");
   info("Welcome to oneMD. The default simulator by jburkardt is now active.");
 
   timestamp ( );
