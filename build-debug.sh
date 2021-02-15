@@ -1,6 +1,6 @@
 #! /bin/bash
 set -e
-echo Building oneMD in release mode...
+echo Building oneMD in debug mode...
 if [ ! -d "build" ] 
 then
     mkdir build
