@@ -7,9 +7,23 @@ find_package (Threads REQUIRED)
 add_subdirectory(ext/spdlog)
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-  set(TGT onemdd)
-else()
-  set(TGT onemd)
+  set(TGT omdd)
+  if (MSVC)
+    set(BIN Debug/${TGT}.exe)
+    set(BIN_OUT ${TGT}.exe)
+  else()
+    set (BIN Debug/${TGT})
+    set(BIN_OUT ${TGT})
+  endif()
+else ()
+  set(TGT omd)
+  if (MSVC)
+    set(BIN Release/${TGT}.exe)
+    set(BIN_OUT ${TGT}.exe)
+  else()
+    set (BIN Release/${TGT})
+    set(BIN_OUT ${TGT})
+  endif()
 endif() 
 
 set (EXT_SRC 
@@ -30,9 +44,15 @@ target_include_directories(${TGT} PRIVATE ext/embedFiglet/src ext/spdlog/include
 target_compile_definitions(${TGT} PRIVATE SPDLOG_COMPILED_LIB=1)
 target_link_libraries(${TGT} PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
-MESSAGE( STATUS "Using ${SSE_FLAGS} extensions")
+add_custom_command(
+    TARGET ${TGT} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_BINARY_DIR}/${BIN}        
+            ${CMAKE_SOURCE_DIR}/${BIN_OUT}
+)
 MESSAGE( STATUS "C++ compiler                = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )
 MESSAGE( STATUS "CMAKE_CXX_FLAGS_RELEASE     = ${CMAKE_CXX_FLAGS_RELEASE}" )
+MESSAGE( STATUS "CMAKE_CXX_FLAGS_DEBUG       = ${CMAKE_CXX_FLAGS_DEBUG}" )
 MESSAGE( STATUS "CMAKE_CXX_FLAGS             = ${CMAKE_CXX_FLAGS}" )
 MESSAGE( STATUS "CMAKE_SYSTEM_NAME           = ${CMAKE_SYSTEM_NAME}" )
 MESSAGE( STATUS "CMAKE_SYSTEM_PROCESSOR      = ${CMAKE_SYSTEM_PROCESSOR}" )

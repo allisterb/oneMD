@@ -3,7 +3,7 @@
 # include <iomanip>
 # include <ctime>
 # include <cmath>
-#include <sstream>
+# include <sstream>
 
 #include "Figlet.hh"
 #include "spdlog/spdlog.h"
@@ -112,13 +112,13 @@ int main ( int argc, char *argv[] )
 	// because exceptions will be thrown for problems.
 	try {  
 
-	// Define the command line object, and insert a message
+	// Define he command line object, and insert a message
 	// that describes the program. The "Command description message" 
 	// is printed last in the help text. The second argument is the 
 	// delimiter (usually space) and the last one is the version number. 
 	// The CmdLine object parses the argv array based on the Arg objects
 	// that it contains. 
-	TCLAP::CmdLine cmd("Command description message", ' ', "0.9");
+	TCLAP::CmdLine cmd("Command description msage", ' ', "0.9");
 
 	// Define a value argument and add it to the command line.
 	// A value arg defines a flag and a type of value that it expects,
