@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/omdd",
-            "args": [],
+            "args": ["fo", "bar", "9", "9", "19", ".2"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -22,7 +22,27 @@
                     "ignoreFailures": true
                 }
             ],
-            "miDebuggerPath": "gdb-oneapi"
+            "miDebuggerPath": "gdb-oneapi",
+        },
+        {
+            "name": "(gdb) omd",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/omd",
+            "args": ["fo", "bar", "9", "9", "19", ".2"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "gdb-oneapi",
         }
     ]
 }

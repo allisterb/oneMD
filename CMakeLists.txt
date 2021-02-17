@@ -4,8 +4,6 @@ project(oneMD DESCRIPTION "Molecular Dynamics simulator for Intel oneAPI." LANGU
 
 find_package (Threads REQUIRED)
 
-add_subdirectory(ext/spdlog)
-
 if (CMAKE_BUILD_TYPE MATCHES Debug)
   set(TGT omdd)
   if (MSVC)
