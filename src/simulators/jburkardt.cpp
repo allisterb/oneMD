@@ -3,14 +3,18 @@
 # include <iomanip>
 # include <ctime>
 # include <cmath>
-#include <sstream>
+# include <sstream>
 
-#include "Figlet.hh"
 #include "spdlog/spdlog.h"
-#include "spdlog/cfg/env.h" // support for loading levels from the environment variable
+
+#include "../Simulator.hh"
 
 using namespace std;
 using namespace spdlog;
+
+class DDD : public Simulator {
+
+}
 
 int cpu ( int argc, char *argv[] );
 void compute ( int np, int nd, double pos[], double vel[], 

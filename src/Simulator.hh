@@ -1,5 +1,11 @@
+#pragma once
+
 #ifndef __SIMULATOR_H__
 #define __SIMULATOR_H__
+
+#include "enum.h"
+
+BETTER_ENUM(Device, int, CPU, FPGA);
 
 class Simulator {
   private:
