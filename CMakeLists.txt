@@ -38,7 +38,7 @@ set (EXT_SRC
 )
 set (SRC src/main.cpp src/Simulator.hh)
 add_executable(${TGT} ${EXT_SRC} ${SRC})
-target_include_directories(${TGT} PRIVATE ext/embedFiglet/src ext/spdlog/include ext/tclap-1.4.0-rc1/include src)
+target_include_directories(${TGT} PRIVATE ext/embedFiglet/src ext/spdlog/include ext/tclap-1.2.3/include src)
 target_compile_definitions(${TGT} PRIVATE SPDLOG_COMPILED_LIB=1)
 target_link_libraries(${TGT} PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
