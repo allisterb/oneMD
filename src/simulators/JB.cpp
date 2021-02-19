@@ -11,9 +11,7 @@ JB::JB(const int _nd, const int _np, const int _ts, const float _ts_delta, const
   Simulator("JB", _nd, _np, _ts, _ts_delta, _device),
   step_num(_ts),
   dt(_ts_delta)
-{
-
-}
+{}
 
 void JB::r8mat_uniform_ab (int m, int n, double a, double b, int &seed, double r[] )
 
@@ -213,7 +211,7 @@ bool JB::Initialize()
   //  Set the positions.
   //
   seed = 123456789;
-  JB::r8mat_uniform_ab ( nd, np, 0.0, 10.0, seed, pos );
+  JB::r8mat_uniform_ab (nd, np, 0.0, 10.0, seed, pos);
   //
   //  Set the velocities.
   //
@@ -234,15 +232,13 @@ bool JB::Initialize()
       acc[i+j*nd] = 0.0;
     }
   }
+  JB::Compute(nd, np, pos, vel, mass, force, potential, kinetic);
+  e0 = potential + kinetic;
   return true;
 }
 
 void JB::Run() 
 {
-  acc = new double[nd*np];
-  force = new double[nd*np];
-  pos = new double[nd*np];
-  vel = new double[nd*np];
   //
   //  This is the main time stepping loop:
   //    Compute forces and energies,
@@ -262,7 +258,6 @@ void JB::Run()
   step_print_index = 0;
   step_print_num = 10; 
   ctime = this->cpu_time ();
-  e0 = potential + kinetic;
   for (step = 0; step <= step_num; step++)
   {
     JB::Update(nd, np, pos, vel, force, acc, mass, dt);
