@@ -69,6 +69,8 @@ add_custom_command(
             ${CMAKE_SOURCE_DIR}/${BIN_OUT}
 )
 
+add_executable(jb_test ext/test_sims/jb_test.cpp)
+
 MESSAGE( STATUS "C++ compiler                 = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )
 MESSAGE( STATUS "MPI                          = $ENV{I_MPI_ROOT}" )
 MESSAGE( STATUS "CMAKE_CXX_FLAGS_RELEASE      = ${CMAKE_CXX_FLAGS_RELEASE}" )
