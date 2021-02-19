@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/omdd",
-            "args": ["fo", "bar", "9", "9", "19", ".2"],
+            "args": ["JB", "3", "9", "19", ".2"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

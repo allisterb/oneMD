@@ -10,7 +10,7 @@
             "defines": [],
             "compilerPath": "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/2021.1.2/linux/bin/clang",
             "cStandard": "c17",
-            "cppStandard": "c++14",
+            "cppStandard": "c++17",
             "intelliSenseMode": "linux-clang-x64",
             "configurationProvider": "ms-vscode.cmake-tools"
         }
