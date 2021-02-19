@@ -9,10 +9,10 @@
 #include "spdlog/spdlog.h"
 #include "tclap/CmdLine.h"
 #include "tclap/UnlabeledValueArg.h"
-#include "enum.h"
+#include "Enum.h"
 
 #include "Util.hh"
-#include "simulators/jburkardt.hh"
+#include "simulators/JB.hh"
 
 using namespace std;
 using namespace spdlog;

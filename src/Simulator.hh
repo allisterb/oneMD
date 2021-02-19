@@ -2,7 +2,7 @@
 #define __SIMULATOR_H__
 
 #include <string>
-#include "enum.h"
+#include "Enum.h"
 
 #include "spdlog/spdlog.h"
 

@@ -5,11 +5,15 @@
 # include <cmath>
 # include <sstream>
 
-#include "jburkardt.hh"
+#include "JB.hh"
 
 JB::JB(const int _nd, const int _np, const int _ts, const float _ts_delta, const Device _device) :
-  Simulator("JB", _nd, _np, _ts, _ts_delta, _device)
-{}
+  Simulator("JB", _nd, _np, _ts, _ts_delta, _device),
+  step_num(_ts),
+  dt(_ts_delta)
+{
+
+}
 
 void JB::r8mat_uniform_ab (int m, int n, double a, double b, int &seed, double r[] )
 
@@ -117,7 +121,6 @@ void JB::r8mat_uniform_ab (int m, int n, double a, double b, int &seed, double r
 
   return;
 }
-//****************************************************************************80
 
 void JB::timestamp ()
 
@@ -164,7 +167,6 @@ void JB::timestamp ()
   return;
 # undef TIME_SIZE
 }
-//****************************************************************************80
 
 double JB::cpu_time ()
 
@@ -197,7 +199,6 @@ double JB::cpu_time ()
 
   return value;
 }
-//****************************************************************************80
 
 bool JB::Initialize()
 {
@@ -264,9 +265,9 @@ void JB::Run()
   e0 = potential + kinetic;
   for (step = 0; step <= step_num; step++)
   {
-    JB::Update ( np, nd, pos, vel, force, acc, mass, dt );
-    JB::Compute( np, nd, pos, vel, mass, force, potential, kinetic );
-    if ( step == step_print )
+    JB::Update(nd, np, pos, vel, force, acc, mass, dt);
+    JB::Compute(nd, np, pos, vel, mass, force, potential, kinetic);
+    if (step == step_print)
     {
       cout << "  " << setw(8) << step
           << "  " << setw(14) << potential

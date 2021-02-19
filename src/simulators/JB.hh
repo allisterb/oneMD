@@ -23,7 +23,7 @@ class JB : public Simulator {
     int step_print_index;
     int step_print_num;
     double *vel;
-    double cpu_time ( );
+    double cpu_time ();
     void r8mat_uniform_ab (int, int, double, double, int&, double[]);
     void timestamp ();
 
