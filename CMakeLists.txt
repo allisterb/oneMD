@@ -16,6 +16,8 @@ else()
 endif()
 
 find_package (Threads REQUIRED)
+find_package(OpenMP REQUIRED)
+find_package(Boost)
 
 set (SPDLOG_SRC 
     ext/spdlog/src/async.cpp
@@ -116,6 +118,34 @@ add_custom_command(
 )
 
 add_executable(jb_test ext/test_sims/jb_test.cpp)
+
+add_executable(ljmd_test 
+    ext/test_sims/wblennardjones/src/coordinates.cpp 
+    ext/test_sims/wblennardjones/src/main.cpp 
+    ext/test_sims/wblennardjones/src/NeighborList.cpp 
+    ext/test_sims/wblennardjones/src/PdbFile.cpp
+    ext/test_sims/wblennardjones/src/Rdf.cpp 
+    ext/test_sims/wblennardjones/src/ThermodynamicVariable.cpp 
+    ext/test_sims/wblennardjones/src/Thermostat.cpp 
+    ext/test_sims/wblennardjones/src/cubicbox.cpp 
+    ext/test_sims/wblennardjones/src/utils.cpp
+    ext/test_sims/wblennardjones/src/Velocity.cpp
+)
+target_include_directories(ljmd_test PRIVATE 
+    ${BOOST_INCLUDES}
+    ext/libxdrfile/include
+    ext/test_sims/wblennardjones/include
+)
+target_link_libraries(ljmd_test PRIVATE 
+  ${LIBBBOOST}
+  OpenMP::OpenMP_CXX
+  xdrfile
+)
+
+
+target_include_directories(${TGT} PRIVATE 
+    ext/embedFiglet/src
+)
 
 MESSAGE( STATUS "C++ compiler                 = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )
 MESSAGE( STATUS "MPI                          = $ENV{I_MPI_ROOT}" )

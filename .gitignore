@@ -34,3 +34,6 @@
 .vscode/settings.json
 omd
 omdd
+
+# Data files
+*.pdb
