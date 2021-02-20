@@ -2,6 +2,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#define CHUNKSIZE 15
 #include "xdrfile.h"
 #include <array>
 using namespace std;

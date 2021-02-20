@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
@@ -19,25 +20,25 @@
  *
  */
 
-
-#ifndef NEIGHBORLIST_H
-#define NEIGHBORLIST_H
+#ifndef THERMOSTAT_H
+#define THERMOSTAT_H
 
 #include "Vector.hh"
-#include "CubicBox.hh"
+#include <random>
+#include <math.h>
 
+using namespace std;
 
-class NeighborList {
+// An Andersen thermostat
+
+class Thermostat {
     private:
-        vector <vector <int> > list;
-        double rlist2;
+        double coll_freq_dt;
+        double sigma;
     public:
-        NeighborList();
-        NeighborList(int natoms, double rlist);
-        int GetNeighbor(int i, int j);
-        int GetSize(int i);
-        void Init(int natoms, double rlist);
-        void Update(vector <Vector> &x, CubicBox &box);
+        Thermostat();
+        Thermostat(double reft, double coll_freq, double dt);
+        void DoCollisions(vector <Vector> &v);
 };
 
 #endif

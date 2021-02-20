@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10.2)
 
-project(oneMD DESCRIPTION "Molecular Dynamics simulator for Intel oneAPI." LANGUAGES CXX C)
+project(oneMD DESCRIPTION "Data-parallel molecular dynamics simulator for Intel oneAPI." LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -71,7 +71,19 @@ if(USE_ONEAPI)
 else()
   set (SIMS_SRC ${CPP_SIMS_SRC})
 endif()
-set (SRC src/Simulator.cpp src/Vector.cpp src/CubicBox.cpp src/NeighborList.cpp ${SIMS_SRC} src/main.cpp)
+set (SRC 
+    src/Simulator.cpp 
+    src/Vector.cpp 
+    src/CubicBox.cpp 
+    src/NeighborList.cpp 
+    src/PdbFile.cpp
+    src/Rdf.cpp 
+    src/ThermodynamicVariable.cpp
+    src/Thermostat.cpp
+    src/Velocity.cpp
+    ${SIMS_SRC} 
+    src/main.cpp
+)
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
   set(TGT omdd)
@@ -141,7 +153,6 @@ target_link_libraries(ljmd_test PRIVATE
   OpenMP::OpenMP_CXX
   xdrfile
 )
-
 
 target_include_directories(${TGT} PRIVATE 
     ext/embedFiglet/src

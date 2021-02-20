@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
@@ -19,25 +20,35 @@
  *
  */
 
-
-#ifndef NEIGHBORLIST_H
-#define NEIGHBORLIST_H
+#ifndef RDF_H
+#define RDF_H
 
 #include "Vector.hh"
 #include "CubicBox.hh"
 
+#include <fstream>
+#include <iomanip>
+#include <math.h>
+#include <string>
+#include <vector>
 
-class NeighborList {
+using namespace std;
+
+class Rdf {
     private:
-        vector <vector <int> > list;
-        double rlist2;
+        double binwidth;
+        double n;
+        int nbins;
+        string outfile;
+        vector <double> g;
+        int freq;
     public:
-        NeighborList();
-        NeighborList(int natoms, double rlist);
-        int GetNeighbor(int i, int j);
-        int GetSize(int i);
-        void Init(int natoms, double rlist);
-        void Update(vector <Vector> &x, CubicBox &box);
+        Rdf();
+        Rdf(int nbins, CubicBox &box, string outfile);
+        void sample(vector <Vector> &x, CubicBox &box);
+        void normalize(int natoms, CubicBox &box);
+        void output();
 };
+
 
 #endif

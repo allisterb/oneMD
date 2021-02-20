@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
@@ -19,25 +20,25 @@
  *
  */
 
-
-#ifndef NEIGHBORLIST_H
-#define NEIGHBORLIST_H
+#ifndef THERMODYNAMICVARIABLE_H
+#define THERMODYNAMICVARIABLE_H
 
 #include "Vector.hh"
-#include "CubicBox.hh"
+#include <math.h>
+#include <vector>
+using namespace std;
 
-
-class NeighborList {
+class ThermodynamicVariable {
     private:
-        vector <vector <int> > list;
-        double rlist2;
+        vector <double> all;
+        double avg;
+        double error;
     public:
-        NeighborList();
-        NeighborList(int natoms, double rlist);
-        int GetNeighbor(int i, int j);
-        int GetSize(int i);
-        void Init(int natoms, double rlist);
-        void Update(vector <Vector> &x, CubicBox &box);
+        ThermodynamicVariable();
+        double GetAvg();
+        double GetError();
+        void ErrorAnalysis(int nblocks);
+        void Normalize();
+        void Sample(double value);
 };
-
 #endif

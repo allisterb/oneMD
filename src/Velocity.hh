@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
@@ -19,25 +20,37 @@
  *
  */
 
-
-#ifndef NEIGHBORLIST_H
-#define NEIGHBORLIST_H
+#ifndef VELOCITY_H
+#define VELOCITY_H
 
 #include "Vector.hh"
-#include "CubicBox.hh"
 
+#include <fstream>
+#include <iomanip>
+#include <math.h>
+#include <string>
+#include <vector>
 
-class NeighborList {
+using namespace std;
+
+class Velocity {
     private:
-        vector <vector <int> > list;
-        double rlist2;
+        double binwidth;
+        double max;
+        double min;
+        double n;
+        double shift;
+        int freq;
+        int nbins;
+        string outfile;
+        vector <Vector> hist;
     public:
-        NeighborList();
-        NeighborList(int natoms, double rlist);
-        int GetNeighbor(int i, int j);
-        int GetSize(int i);
-        void Init(int natoms, double rlist);
-        void Update(vector <Vector> &x, CubicBox &box);
+        Velocity();
+        Velocity(int nbins, double max, double min, string outfile);
+        void sample(vector <Vector> &v);
+        void normalize(int natoms);
+        void output();
 };
+
 
 #endif

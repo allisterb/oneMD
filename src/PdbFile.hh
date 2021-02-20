@@ -1,3 +1,5 @@
+
+
 /*
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
@@ -19,25 +21,27 @@
  *
  */
 
+#ifndef PDBFILE_H
+#define PDBFILE_H
 
-#ifndef NEIGHBORLIST_H
-#define NEIGHBORLIST_H
-
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <vector>
 #include "Vector.hh"
-#include "CubicBox.hh"
+using namespace std;
 
-
-class NeighborList {
-    private:
-        vector <vector <int> > list;
-        double rlist2;
+class PdbFile {
     public:
-        NeighborList();
-        NeighborList(int natoms, double rlist);
-        int GetNeighbor(int i, int j);
-        int GetSize(int i);
-        void Init(int natoms, double rlist);
-        void Update(vector <Vector> &x, CubicBox &box);
+        PdbFile(string filename);
+        PdbFile();
+        void open(string filename);
+        void write_header(string compnd, string author, string remark);
+        void write_line(int atom_no, string atom_name, string res, int res_no, Vector &x, double occupancy, double beta);
+        void close();
+    private:
+        ofstream oFS;
 };
 
 #endif

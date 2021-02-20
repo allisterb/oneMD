@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
@@ -19,25 +20,36 @@
  *
  */
 
+#include "Thermostat.hh"
 
-#ifndef NEIGHBORLIST_H
-#define NEIGHBORLIST_H
+Thermostat::Thermostat() {} 
 
-#include "Vector.hh"
-#include "CubicBox.hh"
+Thermostat::Thermostat(double reft, double coll_freq, double dt)
+{
+    this->sigma = sqrt(reft);
+    this->coll_freq_dt = coll_freq*dt;
+    return;
+}
 
+void Thermostat::DoCollisions(vector <Vector> &v)
+{
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<double> dis(0.0, 1.0);
+    normal_distribution<double> ndis(0.0, this->sigma);
 
-class NeighborList {
-    private:
-        vector <vector <int> > list;
-        double rlist2;
-    public:
-        NeighborList();
-        NeighborList(int natoms, double rlist);
-        int GetNeighbor(int i, int j);
-        int GetSize(int i);
-        void Init(int natoms, double rlist);
-        void Update(vector <Vector> &x, CubicBox &box);
-};
+    #pragma omp parallel for schedule(guided, CHUNKSIZE)
+    for (unsigned int i = 0; i < v.size(); i++)
+    {
 
-#endif
+        if (dis(gen) < this->coll_freq_dt)
+        {
+            v[i][X] = ndis(gen);
+            v[i][Y] = ndis(gen);
+            v[i][Z] = ndis(gen);
+        }
+
+    }
+
+    return;
+}
