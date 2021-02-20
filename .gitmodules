@@ -6,7 +6,7 @@
 	url = https://github.com/gabime/spdlog.git
 [submodule "ext/wblennardjones"]
 	path = ext/test_sims/wblennardjones
-	url = https://github.com/wesbarnett/lennardjones.git
+	url = https://github.com/allisterb/lennardjones.git
 [submodule "ext/libxdrfile"]
 	path = ext/libxdrfile
 	url = https://github.com/wesbarnett/libxdrfile.git
