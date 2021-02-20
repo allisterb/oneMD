@@ -58,7 +58,11 @@ set (XDRFILE_SRC
   ext/libxdrfile/src/xdrfile.c
 )
 
+set (INIH_SRC
+	ext/inih/ini.c
+)
 set (CPP_SIMS_SRC src/simulators/JB.cpp)
+
 if(USE_ONEAPI)
   set (SIMS_SRC ${CPP_SIMS_SRC})
 else()
@@ -70,10 +74,12 @@ add_library (xdrfile SHARED ${XDRFILE_SRC} )
 target_include_directories(xdrfile PRIVATE  
     ext/libxdrfile/include
 )
-if(MSVC)
-	#target_compile_definitions(xdrfile PUBLIC 
 
-	#)
+add_library (inih SHARED ${INIH_SRC})
+target_include_directories(inih PRIVATE  
+    ext/inih
+)
+if(MSVC)
 	target_compile_definitions(xdrfile PRIVATE
 		ftello=_ftelli64
 		fseeko=_fseeki64
@@ -88,11 +94,13 @@ target_include_directories(${TGT} PRIVATE
     ext/spdlog/include 
     ext/tclap-1.2.3/include 
     ext/libxdrfile/include
+	ext/inih
     src
 )
 target_link_libraries(${TGT} PUBLIC 
     ${CMAKE_THREAD_LIBS_INIT}
     xdrfile
+	inih
 )
 target_compile_definitions(${TGT} PRIVATE SPDLOG_COMPILED_LIB=1)
 target_compile_features(${TGT} PRIVATE cxx_std_17)

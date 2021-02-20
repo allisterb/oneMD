@@ -10,3 +10,6 @@
 [submodule "ext/libxdrfile"]
 	path = ext/libxdrfile
 	url = https://github.com/wesbarnett/libxdrfile.git
+[submodule "ext/inih"]
+	path = ext/inih
+	url = https://github.com/benhoyt/inih.git
