@@ -38,7 +38,7 @@ class Thermostat {
     public:
         Thermostat();
         Thermostat(double reft, double coll_freq, double dt);
-        void DoCollisions(vector <Vector> &v);
+        void DoCollisions(vector <Vec3> &v);
 };
 
 #endif

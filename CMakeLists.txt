@@ -57,15 +57,11 @@ if(MSVC)
 	)
 endif()
 
-set (INIH_SRC
-	ext/inih/ini.c
-)
+set (INIH_SRC ext/inih/ini.c)
 add_library (inih SHARED ${INIH_SRC})
-target_include_directories(inih PRIVATE  
-    ext/inih
-)
+target_include_directories(inih PRIVATE ext/inih)
 
-set (CPP_SIMS_SRC src/simulators/JB.cpp)
+set (CPP_SIMS_SRC src/simulators/JB.cpp src/simulators/LJ.cpp)
 if(USE_ONEAPI)
   set (SIMS_SRC ${CPP_SIMS_SRC})
 else()
@@ -117,6 +113,7 @@ target_include_directories(${TGT} PRIVATE
 )
 target_link_libraries(${TGT} PUBLIC 
     ${CMAKE_THREAD_LIBS_INIT}
+    OpenMP::OpenMP_CXX
     spdlog
     xdrfile
 	  inih
@@ -155,7 +152,8 @@ target_link_libraries(ljmd_test PRIVATE
 )
 
 target_include_directories(${TGT} PRIVATE 
-    ext/embedFiglet/src
+  ${OpenMP_CXX_INCLUDE_DIRS}      
+  ext/embedFiglet/src
 )
 
 MESSAGE( STATUS "C++ compiler                 = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )

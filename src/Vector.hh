@@ -36,4 +36,5 @@ public:
     const double& operator[](int i) const;
 };
 
+using Vec3 = Vector;
 #endif
