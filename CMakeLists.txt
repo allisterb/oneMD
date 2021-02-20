@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10.2)
 
-project(oneMD DESCRIPTION "Molecular Dynamics simulator for Intel oneAPI." LANGUAGES CXX)
+project(oneMD DESCRIPTION "Molecular Dynamics simulator for Intel oneAPI." LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -48,6 +48,15 @@ set (EXT_SRC
     ext/spdlog/src/spdlog.cpp
     ext/spdlog/src/stdout_sinks.cpp
 )
+
+set (XDRFILE_SRC
+  ext/libxdrfile/src/trr_seek.c
+  ext/libxdrfile/src/xtc_seek.c
+  ext/libxdrfile/src/xdrfile_trr.c
+  ext/libxdrfile/src/xdrfile_xtc.c
+  ext/libxdrfile/src/xdrfile.c
+)
+
 set (CPP_SIMS_SRC src/simulators/JB.cpp)
 if(USE_ONEAPI)
   set (SIMS_SRC ${CPP_SIMS_SRC})
@@ -56,10 +65,24 @@ else()
 endif()
 set (SRC src/Simulator.cpp ${SIMS_SRC} src/main.cpp)
 
+add_library (xdrfile SHARED ${XDRFILE_SRC} )
+target_include_directories(xdrfile PRIVATE  
+    ext/libxdrfile/include
+)
+
 add_executable(${TGT} ${EXT_SRC} ${SRC})
-target_include_directories(${TGT} PRIVATE ext/embedFiglet/src ext/spdlog/include ext/tclap-1.2.3/include src)
+target_include_directories(${TGT} PRIVATE 
+    ext/embedFiglet/src 
+    ext/spdlog/include 
+    ext/tclap-1.2.3/include 
+    ext/libxdrfile/include
+    src
+)
+target_link_libraries(${TGT} PUBLIC 
+    ${CMAKE_THREAD_LIBS_INIT}
+    xdrfile
+)
 target_compile_definitions(${TGT} PRIVATE SPDLOG_COMPILED_LIB=1)
-target_link_libraries(${TGT} PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 target_compile_features(${TGT} PRIVATE cxx_std_17)
 
 add_custom_command(
