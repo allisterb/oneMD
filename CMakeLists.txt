@@ -5,6 +5,7 @@ project(oneMD DESCRIPTION "Molecular Dynamics simulator for Intel oneAPI." LANGU
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
 
 if(DEFINED ENV{ONEAPI_ROOT})
   set (USE_ONEAPI ON)
@@ -69,6 +70,17 @@ add_library (xdrfile SHARED ${XDRFILE_SRC} )
 target_include_directories(xdrfile PRIVATE  
     ext/libxdrfile/include
 )
+if(MSVC)
+	#target_compile_definitions(xdrfile PUBLIC 
+
+	#)
+	target_compile_definitions(xdrfile PRIVATE
+		ftello=_ftelli64
+		fseeko=_fseeki64
+		off_t=long
+	)
+endif()
+	
 
 add_executable(${TGT} ${EXT_SRC} ${SRC})
 target_include_directories(${TGT} PRIVATE 
