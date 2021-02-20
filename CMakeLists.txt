@@ -35,8 +35,6 @@ set (FIGLET_SRC
     ext/embedFiglet/src/Figlet_Font_standard.cc
     ext/embedFiglet/src/Figlet_Font_small.cc
 )
-add_library (figlet SHARED ${FIGLET_SRC})
-target_include_directories(figlet PRIVATE ext/embedFiglet/include)
 
 set (XDRFILE_SRC
   ext/libxdrfile/src/trr_seek.c
@@ -93,7 +91,7 @@ else ()
   endif()
 endif() 
 
-add_executable(${TGT} ${SRC})
+add_executable(${TGT} ${FIGLET_SRC} ${SRC})
 target_compile_features(${TGT} PRIVATE cxx_std_17)
 target_include_directories(${TGT} PRIVATE 
     ext/embedFiglet/src 
@@ -106,7 +104,6 @@ target_include_directories(${TGT} PRIVATE
 target_link_libraries(${TGT} PUBLIC 
     ${CMAKE_THREAD_LIBS_INIT}
     spdlog
-    figlet
     xdrfile
 	  inih
 )
