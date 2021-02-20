@@ -17,6 +17,62 @@ endif()
 
 find_package (Threads REQUIRED)
 
+set (SPDLOG_SRC 
+    ext/spdlog/src/async.cpp
+    ext/spdlog/src/cfg.cpp
+    ext/spdlog/src/color_sinks.cpp
+    ext/spdlog/src/file_sinks.cpp
+    ext/spdlog/src/fmt.cpp
+    ext/spdlog/src/spdlog.cpp
+    ext/spdlog/src/stdout_sinks.cpp
+)
+add_library (spdlog SHARED ${SPDLOG_SRC})
+target_include_directories(spdlog PRIVATE ext/spdlog/include)
+target_compile_definitions(spdlog PRIVATE SPDLOG_COMPILED_LIB=1)
+
+set (FIGLET_SRC 
+    ext/embedFiglet/src/Figlet.cc
+    ext/embedFiglet/src/Figlet_Font_standard.cc
+    ext/embedFiglet/src/Figlet_Font_small.cc
+)
+add_library (figlet SHARED ${FIGLET_SRC})
+target_include_directories(figlet PRIVATE ext/embedFiglet/include)
+
+set (XDRFILE_SRC
+  ext/libxdrfile/src/trr_seek.c
+  ext/libxdrfile/src/xtc_seek.c
+  ext/libxdrfile/src/xdrfile_trr.c
+  ext/libxdrfile/src/xdrfile_xtc.c
+  ext/libxdrfile/src/xdrfile.c
+)
+add_library (xdrfile SHARED ${XDRFILE_SRC} )
+target_include_directories(xdrfile PRIVATE  
+    ext/libxdrfile/include
+)
+if(MSVC)
+	target_compile_definitions(xdrfile PRIVATE
+		ftello=_ftelli64
+		fseeko=_fseeki64
+		off_t=long
+	)
+endif()
+
+set (INIH_SRC
+	ext/inih/ini.c
+)
+add_library (inih SHARED ${INIH_SRC})
+target_include_directories(inih PRIVATE  
+    ext/inih
+)
+
+set (CPP_SIMS_SRC src/simulators/JB.cpp)
+if(USE_ONEAPI)
+  set (SIMS_SRC ${CPP_SIMS_SRC})
+else()
+  set (SIMS_SRC ${CPP_SIMS_SRC})
+endif()
+set (SRC src/Simulator.cpp src/Vector.cpp src/CubicBox.cpp src/NeighborList.cpp ${SIMS_SRC} src/main.cpp)
+
 if (CMAKE_BUILD_TYPE MATCHES Debug)
   set(TGT omdd)
   if (MSVC)
@@ -37,73 +93,23 @@ else ()
   endif()
 endif() 
 
-set (EXT_SRC 
-    ext/embedFiglet/src/Figlet.cc
-    ext/embedFiglet/src/Figlet_Font_standard.cc
-    ext/embedFiglet/src/Figlet_Font_small.cc
-    ext/spdlog/src/async.cpp
-    ext/spdlog/src/cfg.cpp
-    ext/spdlog/src/color_sinks.cpp
-    ext/spdlog/src/file_sinks.cpp
-    ext/spdlog/src/fmt.cpp
-    ext/spdlog/src/spdlog.cpp
-    ext/spdlog/src/stdout_sinks.cpp
-)
-
-set (XDRFILE_SRC
-  ext/libxdrfile/src/trr_seek.c
-  ext/libxdrfile/src/xtc_seek.c
-  ext/libxdrfile/src/xdrfile_trr.c
-  ext/libxdrfile/src/xdrfile_xtc.c
-  ext/libxdrfile/src/xdrfile.c
-)
-
-set (INIH_SRC
-	ext/inih/ini.c
-)
-set (CPP_SIMS_SRC src/simulators/JB.cpp)
-
-if(USE_ONEAPI)
-  set (SIMS_SRC ${CPP_SIMS_SRC})
-else()
-  set (SIMS_SRC ${CPP_SIMS_SRC})
-endif()
-set (SRC src/Simulator.cpp ${SIMS_SRC} src/main.cpp)
-
-add_library (xdrfile SHARED ${XDRFILE_SRC} )
-target_include_directories(xdrfile PRIVATE  
-    ext/libxdrfile/include
-)
-
-add_library (inih SHARED ${INIH_SRC})
-target_include_directories(inih PRIVATE  
-    ext/inih
-)
-if(MSVC)
-	target_compile_definitions(xdrfile PRIVATE
-		ftello=_ftelli64
-		fseeko=_fseeki64
-		off_t=long
-	)
-endif()
-	
-
-add_executable(${TGT} ${EXT_SRC} ${SRC})
+add_executable(${TGT} ${SRC})
+target_compile_features(${TGT} PRIVATE cxx_std_17)
 target_include_directories(${TGT} PRIVATE 
     ext/embedFiglet/src 
     ext/spdlog/include 
     ext/tclap-1.2.3/include 
     ext/libxdrfile/include
-	ext/inih
+	  ext/inih
     src
 )
 target_link_libraries(${TGT} PUBLIC 
     ${CMAKE_THREAD_LIBS_INIT}
+    spdlog
+    figlet
     xdrfile
-	inih
+	  inih
 )
-target_compile_definitions(${TGT} PRIVATE SPDLOG_COMPILED_LIB=1)
-target_compile_features(${TGT} PRIVATE cxx_std_17)
 
 add_custom_command(
     TARGET ${TGT} POST_BUILD
