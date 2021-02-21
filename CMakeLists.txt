@@ -8,15 +8,24 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
 
 if(DEFINED ENV{ONEAPI_ROOT})
-  set (USE_ONEAPI ON)
-  message(STATUS "Using Intel oneAPI environment at $ENV{ONEAPI_ROOT}.")
+  set(USE_ONEAPI ON)
 else()
-  set (USE_ONEAPI OFF)
+  set(USE_ONEAPI OFF)
+endif()  
+
+if (USE_ONEAPI)
+  message(STATUS "Using Intel oneAPI environment at $ENV{ONEAPI_ROOT}.")
+  if(WIN32)
+    set(CMAKE_CXX_COMPILER "dpcpp-cl")
+  else()
+    set(CMAKE_CXX_COMPILER "dpcpp")
+  endif()
+else()
   message(WARNING "Not using Intel oneAPI. Only standard C++ features and libraries will be available.")
+  find_package(OpenMP REQUIRED)
 endif()
 
 find_package (Threads REQUIRED)
-find_package(OpenMP REQUIRED)
 find_package(Boost)
 
 set (SPDLOG_SRC 
@@ -113,11 +122,13 @@ target_include_directories(${TGT} PRIVATE
 )
 target_link_libraries(${TGT} PUBLIC 
     ${CMAKE_THREAD_LIBS_INIT}
-    OpenMP::OpenMP_CXX
     spdlog
     xdrfile
 	  inih
 )
+if (!USE_ONEAPI)
+  target_link_libraries(${TGT} PRIVATE OpenMP::OpenMP_CXX)
+endif()
 
 add_custom_command(
     TARGET ${TGT} POST_BUILD
@@ -128,34 +139,34 @@ add_custom_command(
 
 add_executable(jb_test ext/test_sims/jb_test.cpp)
 
-add_executable(ljmd_test 
-    ext/test_sims/wblennardjones/src/coordinates.cpp 
-    ext/test_sims/wblennardjones/src/main.cpp 
-    ext/test_sims/wblennardjones/src/NeighborList.cpp 
-    ext/test_sims/wblennardjones/src/PdbFile.cpp
-    ext/test_sims/wblennardjones/src/Rdf.cpp 
-    ext/test_sims/wblennardjones/src/ThermodynamicVariable.cpp 
-    ext/test_sims/wblennardjones/src/Thermostat.cpp 
-    ext/test_sims/wblennardjones/src/cubicbox.cpp 
-    ext/test_sims/wblennardjones/src/utils.cpp
-    ext/test_sims/wblennardjones/src/Velocity.cpp
-)
-target_include_directories(ljmd_test PRIVATE 
-    ${BOOST_INCLUDES}
-    ext/libxdrfile/include
-    ext/test_sims/wblennardjones/include
-)
-target_link_libraries(ljmd_test PRIVATE 
-  ${LIBBBOOST}
-  OpenMP::OpenMP_CXX
-  xdrfile
-)
-
-target_include_directories(${TGT} PRIVATE 
-  ${OpenMP_CXX_INCLUDE_DIRS}      
-  ext/embedFiglet/src
-)
-
+if (Boost_FOUND)
+  add_executable(ljmd_test 
+      ext/test_sims/wblennardjones/src/coordinates.cpp 
+      ext/test_sims/wblennardjones/src/main.cpp 
+      ext/test_sims/wblennardjones/src/NeighborList.cpp 
+      ext/test_sims/wblennardjones/src/PdbFile.cpp
+      ext/test_sims/wblennardjones/src/Rdf.cpp 
+      ext/test_sims/wblennardjones/src/ThermodynamicVariable.cpp 
+      ext/test_sims/wblennardjones/src/Thermostat.cpp 
+      ext/test_sims/wblennardjones/src/cubicbox.cpp 
+      ext/test_sims/wblennardjones/src/utils.cpp
+      ext/test_sims/wblennardjones/src/Velocity.cpp
+  )
+  target_include_directories(ljmd_test PRIVATE 
+      ${BOOST_INCLUDES}
+      ext/libxdrfile/include
+      ext/test_sims/wblennardjones/include
+  )
+  target_link_libraries(ljmd_test PRIVATE 
+    ${LIBBBOOST}
+    xdrfile
+  )
+  if (!USE_ONEAPI)
+    target_link_libraries(ljmd_test PRIVATE OpenMP::OpenMP_CXX)
+  endif()
+else()
+  message(WARNING "Not building ljmd test sim since Boost was not found.")
+endif()
 MESSAGE( STATUS "C++ compiler                 = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )
 MESSAGE( STATUS "MPI                          = $ENV{I_MPI_ROOT}" )
 MESSAGE( STATUS "CMAKE_CXX_FLAGS_RELEASE      = ${CMAKE_CXX_FLAGS_RELEASE}" )
