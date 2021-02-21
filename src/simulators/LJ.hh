@@ -1,6 +1,4 @@
-#ifndef __LJ_H__
-#define __LJ_H__
-/*
+/* Based on https://github.com/wesbarnett/lennardjones" by James W. Barnett
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,6 +18,9 @@
  * directory of the source.
  *
  */
+
+#ifndef __LJ_H__
+#define __LJ_H__
 
 #include <iostream>
 #include <omp.h>
@@ -74,7 +75,6 @@ class System
         int nsteps;             // number of steps for simulation to perform
         NeighborList nlist;
         Rdf rdf;
-        CubicBox box;
         ThermodynamicVariable KineticEnergy;
         ThermodynamicVariable PotentialEnergy;
         ThermodynamicVariable Pressure;
@@ -105,6 +105,7 @@ class System
         void SampleVel();
         void UpdateNeighborList();
         void WriteXTC(int step);
+        CubicBox box;
 };
 
 class LJ : public Simulator {

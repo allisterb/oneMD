@@ -16,6 +16,7 @@ BETTER_ENUM(Device, int, CPU, FPGA);
 typedef struct
 {
     bool debug;
+    Device device;
     double mindist;
     double maxtries;
     double dt;
