@@ -10,6 +10,43 @@ using namespace std;
 
 BETTER_ENUM(Device, int, CPU, FPGA);
 
+typedef struct
+{
+    const double mindist;
+    const double maxtries;
+    const double dt;
+    const int nsteps;
+    const int eql_steps;
+    const int step_sample;
+    const int nblocks;
+    const int natoms;
+    const double rho;
+    double temp;
+    const double rcut;
+    const double rlist;
+    const int nlist;
+    const string pdbfile;
+    const string xtcfile;
+    const int nxtc;
+    const int nlog;
+    const std::string tcouplstr;
+    bool tcoupl;
+    double coll_freq;
+    double reft;
+    string dordfstr;
+    bool dordf;
+    int rdf_nbins;
+    string rdf_outfile;
+    int rdf_freq;
+    string dovelstr;
+    bool dovel; 
+    double v_max;
+    double v_min;
+    int v_nbins;
+    string v_outfile;
+    int v_freq;
+} configuration;
+
 class Simulator {
   private:
   protected:

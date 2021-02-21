@@ -77,6 +77,7 @@ else()
   set (SIMS_SRC ${CPP_SIMS_SRC})
 endif()
 set (SRC 
+    ext/inih/cpp/INIReader.cpp
     src/Simulator.cpp 
     src/Vector.cpp 
     src/CubicBox.cpp 
@@ -118,6 +119,7 @@ target_include_directories(${TGT} PRIVATE
     ext/tclap-1.2.3/include 
     ext/libxdrfile/include
 	  ext/inih
+    ext/inih/cpp
     src
 )
 target_link_libraries(${TGT} PUBLIC 
