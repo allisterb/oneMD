@@ -21,6 +21,11 @@
  *
  */
 
+#include <iostream>
+#include <omp.h>
+#include <random>
+#include <string>
+#include <vector>
 
 #include "../Vector.hh"
 #include "../NeighborList.hh"
@@ -33,13 +38,10 @@
 #include "../Simulator.hh"
 #include "xdrfile_xtc.h"
 
-#include <iostream>
-#include <omp.h>
-#include <random>
-#include <string>
-#include <vector>
+#include "spdlog/spdlog.h"
 
 using namespace std;
+using namespace spdlog;
 
 const double kB = 1.3806485279; // Boltzmann's Constant (J / K)
 const double oneSixth = 1.0/6.0;
@@ -47,6 +49,7 @@ const double oneSixth = 1.0/6.0;
 class System 
 {
     private:
+        configuration conf;
         double dt;              // time step
         double ecut;            // potential energy at cutoff
         double entot;           // instantaneous total energy (ke + pe)
@@ -84,7 +87,7 @@ class System
         Velocity vel;
         XDRFILE *xd;
     public:
-        System(int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
+        System(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
         void CalcForce();
         void CloseXTC();
         void ErrorAnalysis(int nblocks);

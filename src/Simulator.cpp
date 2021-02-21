@@ -21,6 +21,7 @@ Simulator::~Simulator() {}
 configuration Simulator::default_config()
 { 
   return {
+    .debug = false,
     .mindist = 1.0,
     .maxtries = 10e6,
     .dt = 0.005,

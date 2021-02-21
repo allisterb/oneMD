@@ -12,23 +12,24 @@ BETTER_ENUM(Device, int, CPU, FPGA);
 
 typedef struct
 {
-    const double mindist;
-    const double maxtries;
-    const double dt;
-    const int nsteps;
-    const int eql_steps;
-    const int step_sample;
-    const int nblocks;
-    const int natoms;
-    const double rho;
+    bool debug;
+    double mindist;
+    double maxtries;
+    double dt;
+    int nsteps;
+    int eql_steps;
+    int step_sample;
+    int nblocks;
+    int natoms;
+    double rho;
     double temp;
-    const double rcut;
-    const double rlist;
-    const int nlist;
-    const string pdbfile;
-    const string xtcfile;
-    const int nxtc;
-    const int nlog;
+    double rcut;
+    double rlist;
+    int nlist;
+    string pdbfile;
+    string xtcfile;
+    int nxtc;
+    int nlog;
     const std::string tcouplstr;
     bool tcoupl;
     double coll_freq;
@@ -51,7 +52,7 @@ class Simulator {
   private:
   protected:
   public:
-    Simulator(string name, const int _nd, const int _np, const int _ts, const float _ts_delta, const Device _device);
+    Simulator(const string _name, const int _nd, const int _np, const int _ts, const float _ts_delta, const Device _device);
     Simulator(const string _name, configuration config, const Device _device);
     virtual bool Initialize() = 0;
     virtual void Compute (int nd, int np, double pos[], double vel[], double mass, double f[], double &pot, double &kin) = 0;

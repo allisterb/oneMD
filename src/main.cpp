@@ -23,6 +23,7 @@ int main (int argc, char *argv[] )
 { 
   Figlet::small.print("oneMD");
 	unique_ptr<Simulator> sim(nullptr);
+  auto config = Simulator::default_config();
   try 
   {  
     CmdLine cmd("oneMD data-parallel molecular dynamics simulator.", ' ', "0.1", true);
@@ -43,16 +44,16 @@ int main (int argc, char *argv[] )
     auto debugLog = debugArg.getValue();
     if (debugLog) {
       set_level(level::debug);
+      config.debug = true;
       info("Debug-level logging enabled.");
     }
-    auto sim_name = simArg.getValue();
+    auto sim_name = Util::upper(simArg.getValue());
     auto nd = ndArg.getValue();
     auto np = npArg.getValue();
     auto ts = tsArg.getValue();
     auto tsDelta = tsdeltaArg.getValue();
     auto device = Device::_from_string(Util::upper(devArg.getValue()).c_str());
     auto config_name = configArg.getValue();
-    auto config = Simulator::default_config();
     if (config_name != "")
     { 
       info("Using configuration file {}.", config_name);

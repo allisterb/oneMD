@@ -23,8 +23,10 @@
 
 #include "LJ.hh"
 
-System::System(int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile)
+System::System(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile) :
+conf(c)
 {
+    cout << setprecision(6) << fixed << right;
     this->x.resize(natoms);
     this->v.resize(natoms);
     this->f.resize(natoms);
@@ -279,10 +281,10 @@ void System::PrintHeader()
     cout << setw(14) << "Step";
     cout << setw(14) << "Time";
     cout << setw(14) << "Temp";
-    cout << setw(14) << "Press";
+    cout << setw(14) << "Pressure";
     cout << setw(14) << "KE";
     cout << setw(14) << "PE";
-    cout << setw(14) << "Tot. En." << endl;
+    cout << setw(14) << "Tot. Energy" << endl;
     return;
 }
 
@@ -761,61 +763,64 @@ int main2(int argc, char *argv[])
 LJ::LJ(configuration config, Device device) : 
     Simulator("LJ", config, device),
     conf(config),
-    sys(config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile)
-    //sys(config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile)
-{
-
-}
+    sys(config, config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile)
+{}
 
 bool LJ::Initialize() 
 {
+    info("Lennard-Jones simulation of {} atoms. Original code by James W. Barnett https://github.com/wesbarnett/lennardjones", conf.natoms);
+    if (!conf.debug)
+    {
+        info("Use --debug to print this simulator's configuration.");
+    }
+    else
+    {
         cout << endl;
-    cout << setw(30) << left << "[ setup ]" << endl;
-    cout << setw(30) << left << "maxtries = " << setw(30) << left << conf.maxtries << endl;
-    cout << setw(30) << left << "mindist = "  << setw(30) << left << conf.mindist << endl;
-    cout << setw(30) << left << "dt = " << conf.dt << endl;
-    cout << endl;
-    cout << setw(30) << left << "[ runcontrol ]" << endl;
-    cout << setw(30) << left << "nsteps = " << setw(30) << left << conf.nsteps << endl;
-    cout << setw(30) << left << "eql_steps = " << setw(30) << left << conf.eql_steps << endl;
-    cout << setw(30) << left << "nsample = " << setw(30) << left << conf.step_sample << endl;
-    cout << setw(30) << left << "nblocks = " << setw(30) << left << conf.nblocks << endl;
-    cout << endl;
-    cout << setw(30) << left << "[ system ]" << endl;
-    cout << setw(30) << left << "natoms = " << setw(30) << left << conf.natoms << endl;
-    cout << setw(30) << left << "rho = " << setw(30) << left << conf.rho << endl;
-    cout << setw(30) << left << "inittemp = " << setw(30) << left << conf.temp << endl;
-    cout << setw(30) << left << "rcut = " << setw(30) << left << conf.rcut << endl;
-    cout << setw(30) << left << "rlist = " << setw(30) << left << conf.rlist << endl;
-    cout << setw(30) << left << "nlist = " << setw(30) << left << conf.nlist << endl;
-    cout << endl;
-    cout << setw(30) << left << "[ output ]" << endl;
-    cout << setw(30) << left << "pdbfile = " << setw(30) << left << conf.pdbfile << endl;
-    cout << setw(30) << left << "xtcfile = " << setw(30) << left << conf.xtcfile << endl;
-    cout << setw(30) << left << "nxtc = " << setw(30) << left << conf.nxtc << endl;
-    cout << setw(30) << left << "nlog = " << setw(30) << left << conf.nlog << endl;
-    cout << endl;
-    cout << setw(30) << left << "[ temperature ]" << endl;
-    cout << setw(30) << left << "reft = " << setw(30) << left << conf.reft << endl;
-    cout << setw(30) << left << "coupl = " << setw(30) << left << conf.tcouplstr << endl;
-    cout << setw(30) << left << "coll_freq = " << setw(30) << left << conf.coll_freq << endl;
-    cout << endl;
-    cout << setw(30) << left << "[ rdf ]" << endl;
-    cout << setw(30) << left << "sample = " << setw(30) << left << conf.dordfstr << endl;
-    cout << setw(30) << left << "nbins = " << setw(30) << left << conf.rdf_nbins << endl;
-    cout << setw(30) << left << "outfile = " << setw(30) << left << conf.rdf_outfile << endl;
-    cout << setw(30) << left << "freq = " << setw(30) << left << conf.rdf_freq << endl;
-    cout << endl;
-    cout << setw(30) << left << "[ velocity ]" << endl;
-    cout << setw(30) << left << "sample = " << setw(30) << left << conf.dovelstr << endl;
-    cout << setw(30) << left << "min = " << setw(30) << left << conf.v_min << endl;
-    cout << setw(30) << left << "max = " << setw(30) << left << conf.v_max << endl;
-    cout << setw(30) << left << "nbins = " << setw(30) << left << conf.v_nbins << endl;
-    cout << setw(30) << left << "outfile = " << setw(30) << left << conf.v_outfile << endl;
-    cout << setw(30) << left << "freq = " << setw(30) << left << conf.v_freq << endl;
-    cout << endl;
-    
-
+        cout << setw(30) << left << "[ setup ]" << endl;
+        cout << setw(30) << left << "maxtries = " << setw(30) << left << conf.maxtries << endl;
+        cout << setw(30) << left << "mindist = "  << setw(30) << left << conf.mindist << endl;
+        cout << setw(30) << left << "dt = " << conf.dt << endl;
+        cout << endl;
+        cout << setw(30) << left << "[ runcontrol ]" << endl;
+        cout << setw(30) << left << "nsteps = " << setw(30) << left << conf.nsteps << endl;
+        cout << setw(30) << left << "eql_steps = " << setw(30) << left << conf.eql_steps << endl;
+        cout << setw(30) << left << "nsample = " << setw(30) << left << conf.step_sample << endl;
+        cout << setw(30) << left << "nblocks = " << setw(30) << left << conf.nblocks << endl;
+        cout << endl;
+        cout << setw(30) << left << "[ system ]" << endl;
+        cout << setw(30) << left << "natoms = " << setw(30) << left << conf.natoms << endl;
+        cout << setw(30) << left << "rho = " << setw(30) << left << conf.rho << endl;
+        cout << setw(30) << left << "inittemp = " << setw(30) << left << conf.temp << endl;
+        cout << setw(30) << left << "rcut = " << setw(30) << left << conf.rcut << endl;
+        cout << setw(30) << left << "rlist = " << setw(30) << left << conf.rlist << endl;
+        cout << setw(30) << left << "nlist = " << setw(30) << left << conf.nlist << endl;
+        cout << endl;
+        cout << setw(30) << left << "[ output ]" << endl;
+        cout << setw(30) << left << "pdbfile = " << setw(30) << left << conf.pdbfile << endl;
+        cout << setw(30) << left << "xtcfile = " << setw(30) << left << conf.xtcfile << endl;
+        cout << setw(30) << left << "nxtc = " << setw(30) << left << conf.nxtc << endl;
+        cout << setw(30) << left << "nlog = " << setw(30) << left << conf.nlog << endl;
+        cout << endl;
+        cout << setw(30) << left << "[ temperature ]" << endl;
+        cout << setw(30) << left << "reft = " << setw(30) << left << conf.reft << endl;
+        cout << setw(30) << left << "coupl = " << setw(30) << left << conf.tcouplstr << endl;
+        cout << setw(30) << left << "coll_freq = " << setw(30) << left << conf.coll_freq << endl;
+        cout << endl;
+        cout << setw(30) << left << "[ rdf ]" << endl;
+        cout << setw(30) << left << "sample = " << setw(30) << left << conf.dordfstr << endl;
+        cout << setw(30) << left << "nbins = " << setw(30) << left << conf.rdf_nbins << endl;
+        cout << setw(30) << left << "outfile = " << setw(30) << left << conf.rdf_outfile << endl;
+        cout << setw(30) << left << "freq = " << setw(30) << left << conf.rdf_freq << endl;
+        cout << endl;
+        cout << setw(30) << left << "[ velocity ]" << endl;
+        cout << setw(30) << left << "sample = " << setw(30) << left << conf.dovelstr << endl;
+        cout << setw(30) << left << "min = " << setw(30) << left << conf.v_min << endl;
+        cout << setw(30) << left << "max = " << setw(30) << left << conf.v_max << endl;
+        cout << setw(30) << left << "nbins = " << setw(30) << left << conf.v_nbins << endl;
+        cout << setw(30) << left << "outfile = " << setw(30) << left << conf.v_outfile << endl;
+        cout << setw(30) << left << "freq = " << setw(30) << left << conf.v_freq << endl;
+        cout << endl; 
+    }
     return true;
 }
 
@@ -825,7 +830,7 @@ void LJ::Compute (int nd, int np, double pos[], double vel[], double mass, doubl
 {}
 void LJ::Run() 
 {
-    //Sys sys(config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile);
+    info("Press Ctrl-C to stop simulation.");
     sys.UpdateNeighborList();
     sys.CalcForce();
     sys.PrintHeader();
