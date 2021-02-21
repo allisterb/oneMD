@@ -21,91 +21,10 @@
  */
 
 
-#include "../Vector.hh"
-#include "../NeighborList.hh"
-#include "../PdbFile.hh"
-#include "../Rdf.hh"
-#include "../Thermostat.hh"
-#include "../ThermodynamicVariable.hh"
-#include "../CubicBox.hh"
-#include "../Velocity.hh"
-
-#include "xdrfile_xtc.h"
-
-#include <iostream>
-#include <omp.h>
-#include <random>
-#include <string>
-#include <vector>
-
-using namespace std;
-
-const double kB = 1.3806485279; // Boltzmann's Constant (J / K)
-const double oneSixth = 1.0/6.0;
-
-class System 
-{
-    private:
-        double dt;              // time step
-        double ecut;            // potential energy at cutoff
-        double entot;           // instantaneous total energy (ke + pe)
-        double etail;           // energy tail correction
-        double halfdt;          // 0.5 * dt
-        double halfdt2;         // 0.5 * dt*dt
-        double halfecut;        // 0.5 * ecut
-        double inatomsm1;       // 1.0/natoms - 1.0
-        double i2natoms;        // 1.0(2.0*natoms)
-        double i3natoms;        // 1.0(3.0*natoms)
-        double ke;              // instantaneous kinetic energy
-        double pe;              // instantaneous potential energy
-        double press;           // instantaneous pressure
-        double ptail;           // pressure tail correction
-        double rcut2;           // rcut*rcut
-        double rho;             // density (constant)
-        double rhokB;           // density * boltzmann's constant
-        double temp;            // instantaneous temperature
-        double vol;             // volume (constant)
-        int natoms;             // number of atoms in system
-        int nsample;            // counter of number of samples
-        int nsteps;             // number of steps for simulation to perform
-        NeighborList nlist;
-        Rdf rdf;
-        CubicBox box;
-        ThermodynamicVariable KineticEnergy;
-        ThermodynamicVariable PotentialEnergy;
-        ThermodynamicVariable Pressure;
-        ThermodynamicVariable Temperature;
-        ThermodynamicVariable TotalEnergy;
-        Thermostat tstat;
-        vector <Vector> f; // forces
-        vector <Vector> v; // velocities
-        vector <Vector> x; // positions
-        Velocity vel;
-        XDRFILE *xd;
-    public:
-        System(int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
-        void CalcForce();
-        void CloseXTC();
-        void ErrorAnalysis(int nblocks);
-        void Integrate(int a, bool tcoupl);
-        void NormalizeAverages();
-        void NormalizeRdf();
-        void NormalizeVel();
-        void OutputVel();
-        void OutputRdf();
-        void Print(int step);
-        void PrintAverages();
-        void PrintHeader();
-        void Sample();
-        void SampleRdf();
-        void SampleVel();
-        void UpdateNeighborList();
-        void WriteXTC(int step);
-};
+#include "LJ.hh"
 
 System::System(int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile)
 {
-
     this->x.resize(natoms);
     this->v.resize(natoms);
     this->f.resize(natoms);
@@ -839,3 +758,144 @@ int main2(int argc, char *argv[])
     return 0;
 }
 */
+LJ::LJ(configuration config, Device device) : 
+    Simulator("LJ", config, device),
+    conf(config),
+    sys(config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile)
+    //sys(config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile)
+{
+
+}
+
+bool LJ::Initialize() 
+{
+        cout << endl;
+    cout << setw(30) << left << "[ setup ]" << endl;
+    cout << setw(30) << left << "maxtries = " << setw(30) << left << conf.maxtries << endl;
+    cout << setw(30) << left << "mindist = "  << setw(30) << left << conf.mindist << endl;
+    cout << setw(30) << left << "dt = " << conf.dt << endl;
+    cout << endl;
+    cout << setw(30) << left << "[ runcontrol ]" << endl;
+    cout << setw(30) << left << "nsteps = " << setw(30) << left << conf.nsteps << endl;
+    cout << setw(30) << left << "eql_steps = " << setw(30) << left << conf.eql_steps << endl;
+    cout << setw(30) << left << "nsample = " << setw(30) << left << conf.step_sample << endl;
+    cout << setw(30) << left << "nblocks = " << setw(30) << left << conf.nblocks << endl;
+    cout << endl;
+    cout << setw(30) << left << "[ system ]" << endl;
+    cout << setw(30) << left << "natoms = " << setw(30) << left << conf.natoms << endl;
+    cout << setw(30) << left << "rho = " << setw(30) << left << conf.rho << endl;
+    cout << setw(30) << left << "inittemp = " << setw(30) << left << conf.temp << endl;
+    cout << setw(30) << left << "rcut = " << setw(30) << left << conf.rcut << endl;
+    cout << setw(30) << left << "rlist = " << setw(30) << left << conf.rlist << endl;
+    cout << setw(30) << left << "nlist = " << setw(30) << left << conf.nlist << endl;
+    cout << endl;
+    cout << setw(30) << left << "[ output ]" << endl;
+    cout << setw(30) << left << "pdbfile = " << setw(30) << left << conf.pdbfile << endl;
+    cout << setw(30) << left << "xtcfile = " << setw(30) << left << conf.xtcfile << endl;
+    cout << setw(30) << left << "nxtc = " << setw(30) << left << conf.nxtc << endl;
+    cout << setw(30) << left << "nlog = " << setw(30) << left << conf.nlog << endl;
+    cout << endl;
+    cout << setw(30) << left << "[ temperature ]" << endl;
+    cout << setw(30) << left << "reft = " << setw(30) << left << conf.reft << endl;
+    cout << setw(30) << left << "coupl = " << setw(30) << left << conf.tcouplstr << endl;
+    cout << setw(30) << left << "coll_freq = " << setw(30) << left << conf.coll_freq << endl;
+    cout << endl;
+    cout << setw(30) << left << "[ rdf ]" << endl;
+    cout << setw(30) << left << "sample = " << setw(30) << left << conf.dordfstr << endl;
+    cout << setw(30) << left << "nbins = " << setw(30) << left << conf.rdf_nbins << endl;
+    cout << setw(30) << left << "outfile = " << setw(30) << left << conf.rdf_outfile << endl;
+    cout << setw(30) << left << "freq = " << setw(30) << left << conf.rdf_freq << endl;
+    cout << endl;
+    cout << setw(30) << left << "[ velocity ]" << endl;
+    cout << setw(30) << left << "sample = " << setw(30) << left << conf.dovelstr << endl;
+    cout << setw(30) << left << "min = " << setw(30) << left << conf.v_min << endl;
+    cout << setw(30) << left << "max = " << setw(30) << left << conf.v_max << endl;
+    cout << setw(30) << left << "nbins = " << setw(30) << left << conf.v_nbins << endl;
+    cout << setw(30) << left << "outfile = " << setw(30) << left << conf.v_outfile << endl;
+    cout << setw(30) << left << "freq = " << setw(30) << left << conf.v_freq << endl;
+    cout << endl;
+    
+
+    return true;
+}
+
+void LJ::Update (int nd, int np, double pos[], double vel[], double f[], double acc[], double mass, double dt)
+{}
+void LJ::Compute (int nd, int np, double pos[], double vel[], double mass, double f[], double &pot, double &kin)
+{}
+void LJ::Run() 
+{
+    //Sys sys(config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile);
+    sys.UpdateNeighborList();
+    sys.CalcForce();
+    sys.PrintHeader();
+    sys.Print(0);
+
+    for (int step = 1; step < conf.nsteps; step++)
+    {
+
+
+        // Main part of algorithm
+        sys.Integrate(0, conf.tcoupl);
+        sys.CalcForce();
+        sys.Integrate(1, conf.tcoupl);
+
+
+        // Update the neighbor list this step?
+        if (step % conf.nlist == 0)
+        {
+            sys.UpdateNeighborList();
+        }
+
+        // Sample the RDF this step?
+        if (( conf.dordf == true) && (step % conf.rdf_freq == 0) && (step > conf.eql_steps))
+        {
+            sys.SampleRdf();
+        }
+
+        // Sample the velocity distribution this step?
+        if (( conf.dovel == true) && (step % conf.v_freq == 0) && (step > conf.eql_steps))
+        {
+            sys.SampleVel();
+        }
+
+        // Do other sampling this step?
+        if ( (step % conf.step_sample) == 0 && (step > conf.eql_steps) )
+        {
+            sys.Sample();
+        }
+
+        // Print to the log this step?
+        if (step % conf.nlog == 0)
+        {
+            sys.Print(step);
+        }
+
+        // Write to the xtc file this step?
+        if (step % conf.nxtc == 0)
+        {
+            sys.WriteXTC(step);
+        }
+
+    }
+
+    sys.CloseXTC();
+
+    if (conf.dordf == true)
+    {
+        sys.NormalizeRdf();
+        sys.OutputRdf();
+    }
+
+    if (conf.dovel == true)
+    {
+        sys.NormalizeVel();
+        sys.OutputVel();
+    }
+
+    sys.ErrorAnalysis(conf.nblocks);
+    sys.NormalizeAverages();
+    sys.PrintAverages();
+
+    //return 0;
+} 

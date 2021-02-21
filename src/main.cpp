@@ -13,25 +13,32 @@
 
 #include "Util.hh"
 #include "simulators/JB.hh"
+#include "simulators/LJ.hh"
 
 using namespace std;
 using namespace spdlog;
 using namespace TCLAP;
 
-int main ( int argc, char *argv[] )
+int main (int argc, char *argv[] )
 { 
   Figlet::small.print("oneMD");
 	try 
   {  
     CmdLine cmd("oneMD data-parallel molecular dynamics simulator.", ' ', "0.1", true);
-    UnlabeledValueArg<string> simArg("simulator","Name of simulator to run.", true, "cpu", "string", cmd);
-    UnlabeledValueArg<int> ndArg("dimensions","Number of dimensions for simulation from 1 - 3.",true, 1,"integer", cmd);
-    UnlabeledValueArg<int> npArg("particles","Number of particles for simulation.",true, 1,"integer", cmd);
-    UnlabeledValueArg<int> tsArg("timesteps","Number of time steps for simulation.",true, 1,"integer", cmd);
-    UnlabeledValueArg<float> tsdeltaArg("ts_delta","Timestep delta in seconds.",true, 0.2f,"integer", cmd);
-    UnlabeledValueArg<string> devArg("device","Name of hardware device, accelerator or library to run simulation on.", false, "CPU", "string", cmd);
+    UnlabeledValueArg<string> simArg("simulator","Name of simulator to run.", true, "", "string", cmd);
+    ValueArg<int> ndArg("", "dimensions","Number of dimensions for simulation from 1 - 3.",false, 2,"integer");
+    ValueArg<int> npArg("", "particles","Number of particles for simulation.",false, 100,"integer");
+    ValueArg<int> tsArg("", "timesteps","Number of time steps for simulation.",false, 1000,"integer");
+    ValueArg<float> tsdeltaArg("", "ts_delta","Timestep delta in seconds.",false, 0.2f,"integer");
+    ValueArg<string> devArg("e", "device","Name of hardware device, accelerator or library to run simulation on.", false, "CPU", "string");
+    ValueArg<string> configArg("c","config","Name of configuration file for simulation,",false,"","string");
     SwitchArg debugArg("d","debug","Enable debug-level logging.", cmd, false);
-    cmd.parse( argc, argv );
+    cmd.add(ndArg);
+    cmd.add(npArg);
+    cmd.add(tsArg);
+    cmd.add(tsdeltaArg);
+    cmd.add(devArg);
+    cmd.parse(argc, argv);
     auto debugLog = debugArg.getValue();
     if (debugLog) {
       set_level(level::debug);
@@ -43,10 +50,30 @@ int main ( int argc, char *argv[] )
     auto ts = tsArg.getValue();
     auto tsDelta = tsdeltaArg.getValue();
     auto device = Device::_from_string(Util::upper(devArg.getValue()).c_str());
-    auto jb = JB(nd, np, ts, tsDelta, device);
-    jb.Initialize();
-    jb.Run();
-    return 0;
+    auto config_name = configArg.getValue();
+    auto config = Simulator::default_config();
+    if (config_name != "")
+    { 
+      info("Using configuration file {}.", config_name);
+    }
+    else
+    {
+      info("No configuration file specified. Using default configuration.");
+    }
+    if (simulator == "JB")
+    {
+      auto jb = JB(nd, np, ts, tsDelta, device);
+      jb.Initialize();
+      jb.Run();
+      return 0;
+    }
+    else if (simulator == "LJ")
+    {
+      auto lj = LJ(config, device);
+      lj.Initialize();
+      lj.Run();
+      return 0;
+    }
 	}
   catch (ArgException &e) 
   { 

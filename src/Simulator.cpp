@@ -8,8 +8,16 @@ Simulator::Simulator(const string _name, const int _nd, const int _np, const int
   ts_delta(_ts_delta),
   device(_device)
 {}
+Simulator::Simulator(const string _name, configuration config, const Device _device) :
+  name(_name),
+  nd(3),
+  np(config.natoms),
+  ts(config.nsteps),
+  ts_delta(config.dt),
+  device(_device)
+{}
 
-configuration default_config()
+configuration Simulator::default_config()
 { 
   return {
     .mindist = 1.0,
@@ -46,4 +54,12 @@ configuration default_config()
     .v_outfile = "vel_dist.dat",
     .v_freq = 1000
   };
+}
+
+int Simulator::config_ini_handler(void* c, const char* section, const char* name,
+                   const char* value)
+{
+  configuration* pconfig = (configuration*) c;
+  #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0  
+  return 1;
 }
