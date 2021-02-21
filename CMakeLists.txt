@@ -113,6 +113,12 @@ endif()
 
 add_executable(${TGT} ${FIGLET_SRC} ${SRC})
 target_compile_features(${TGT} PRIVATE cxx_std_17)
+if (MSVC)
+  add_compile_options("/std:c++latest")
+  target_compile_definitions(${TGT} PRIVATE
+    _USE_MATH_DEFINES = 1
+  )
+endif()
 target_include_directories(${TGT} PRIVATE 
     ext/embedFiglet/src 
     ext/spdlog/include 
