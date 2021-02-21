@@ -37,7 +37,7 @@ set (SPDLOG_SRC
     ext/spdlog/src/spdlog.cpp
     ext/spdlog/src/stdout_sinks.cpp
 )
-add_library (spdlog SHARED ${SPDLOG_SRC})
+add_library (spdlog STATIC ${SPDLOG_SRC})
 target_include_directories(spdlog PRIVATE ext/spdlog/include)
 target_compile_definitions(spdlog PRIVATE SPDLOG_COMPILED_LIB=1)
 
@@ -54,7 +54,7 @@ set (XDRFILE_SRC
   ext/libxdrfile/src/xdrfile_xtc.c
   ext/libxdrfile/src/xdrfile.c
 )
-add_library (xdrfile SHARED ${XDRFILE_SRC} )
+add_library (xdrfile STATIC ${XDRFILE_SRC} )
 target_include_directories(xdrfile PRIVATE  
     ext/libxdrfile/include
 )
@@ -67,7 +67,7 @@ if(MSVC)
 endif()
 
 set (INIH_SRC ext/inih/ini.c)
-add_library (inih SHARED ${INIH_SRC})
+add_library (inih STATIC ${INIH_SRC})
 target_include_directories(inih PRIVATE ext/inih)
 
 set (CPP_SIMS_SRC src/simulators/JB.cpp src/simulators/LJ.cpp)
