@@ -22,7 +22,8 @@ using namespace TCLAP;
 int main (int argc, char *argv[] )
 { 
   Figlet::small.print("oneMD");
-	try 
+	unique_ptr<Simulator> sim(nullptr);
+  try 
   {  
     CmdLine cmd("oneMD data-parallel molecular dynamics simulator.", ' ', "0.1", true);
     UnlabeledValueArg<string> simArg("simulator","Name of simulator to run.", true, "", "string", cmd);
@@ -44,7 +45,7 @@ int main (int argc, char *argv[] )
       set_level(level::debug);
       info("Debug-level logging enabled.");
     }
-    auto simulator = simArg.getValue();
+    auto sim_name = simArg.getValue();
     auto nd = ndArg.getValue();
     auto np = npArg.getValue();
     auto ts = tsArg.getValue();
@@ -60,19 +61,13 @@ int main (int argc, char *argv[] )
     {
       info("No configuration file specified. Using default configuration.");
     }
-    if (simulator == "JB")
+    if (sim_name == "JB")
     {
-      auto jb = JB(nd, np, ts, tsDelta, device);
-      jb.Initialize();
-      jb.Run();
-      return 0;
+      sim = make_unique<JB> (nd, np, ts, tsDelta, device);
     }
-    else if (simulator == "LJ")
+    else if (sim_name == "LJ")
     {
-      auto lj = LJ(config, device);
-      lj.Initialize();
-      lj.Run();
-      return 0;
+      sim =  make_unique<LJ>(config, device);
     }
 	}
   catch (ArgException &e) 
@@ -83,6 +78,18 @@ int main (int argc, char *argv[] )
   catch (std::exception &e) 
   { 
     error("Runtime error parsing options: {0}", e.what());
+    return 1; 
+  }
+
+  try
+  {
+    sim->Initialize();
+    sim->Run();
+    return 0;
+  }
+  catch (std::exception &e) 
+  { 
+    error("Runtime error in simulator {}: {}", sim->name, e.what());
     return 1; 
   }
 }

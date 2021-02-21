@@ -63,6 +63,7 @@ class Simulator {
     const int ts;
     const float ts_delta;
     const Device device;
+    virtual ~Simulator();
     static configuration default_config();
     static int config_ini_handler(void* config, const char* section, const char* name, const char* value);
 };

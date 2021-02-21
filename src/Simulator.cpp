@@ -16,6 +16,7 @@ Simulator::Simulator(const string _name, configuration config, const Device _dev
   ts_delta(config.dt),
   device(_device)
 {}
+Simulator::~Simulator() {}
 
 configuration Simulator::default_config()
 { 
