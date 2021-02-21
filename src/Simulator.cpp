@@ -15,7 +15,10 @@ Simulator::Simulator(const string _name, configuration config, const Device _dev
   ts(config.nsteps),
   ts_delta(config.dt),
   device(_device)
-{}
+{
+  info("config.natoms = {}. config.nsteps = {}. config.dt = {}.", config.natoms, config.nsteps, config.dt);
+}
+
 Simulator::~Simulator() {}
 
 configuration Simulator::default_config()

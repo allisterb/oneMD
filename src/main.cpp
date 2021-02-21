@@ -29,9 +29,9 @@ int main (int argc, char *argv[] )
     CmdLine cmd("oneMD data-parallel molecular dynamics simulator.", ' ', "0.1", true);
     UnlabeledValueArg<string> simArg("simulator","Name of simulator to run.", true, "", "string", cmd);
     ValueArg<int> ndArg("", "dimensions","Number of dimensions for simulation from 1 - 3.",false, 2,"integer");
-    ValueArg<int> npArg("", "particles","Number of particles for simulation.",false, 100,"integer");
-    ValueArg<int> tsArg("", "timesteps","Number of time steps for simulation.",false, 1000,"integer");
-    ValueArg<float> tsdeltaArg("", "ts_delta","Timestep delta in seconds.",false, 0.2f,"integer");
+    ValueArg<int> npArg("n", "particles","Number of particles for simulation.",false, 100,"integer");
+    ValueArg<int> tsArg("t", "timesteps","Number of time steps for simulation.",false, 1000,"integer");
+    ValueArg<double> tsdeltaArg("", "dt","Timestep delta in seconds.",false, 0.005,"integer");
     ValueArg<string> devArg("e", "device","Name of hardware device, accelerator or library to run simulation on.", false, "CPU", "string");
     ValueArg<string> configArg("c","config","Name of configuration file for simulation,",false,"","string");
     SwitchArg debugArg("d","debug","Enable debug-level logging.", cmd, false);
@@ -51,7 +51,7 @@ int main (int argc, char *argv[] )
     auto nd = ndArg.getValue();
     auto np = npArg.getValue();
     auto ts = tsArg.getValue();
-    auto tsDelta = tsdeltaArg.getValue();
+    auto ts_delta = tsdeltaArg.getValue();
     auto device = Device::_from_string(Util::upper(devArg.getValue()).c_str());
     auto config_name = configArg.getValue();
     if (config_name != "")
@@ -62,9 +62,12 @@ int main (int argc, char *argv[] )
     {
       info("No configuration file specified. Using default configuration.");
     }
+    config.natoms = np;
+    config.nsteps = ts;
+    config.dt = ts_delta; 
     if (sim_name == "JB")
     {
-      sim = make_unique<JB> (nd, np, ts, tsDelta, device);
+      sim = make_unique<JB> (nd, np, ts, ts_delta, device);
     }
     else if (sim_name == "LJ")
     {

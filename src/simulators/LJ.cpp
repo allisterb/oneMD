@@ -57,7 +57,7 @@ conf(c)
     this->box[X] = box_side;
     this->box[Y] = box_side;
     this->box[Z] = box_side;
-    cout << "Box is " << box_side << " in each dimension." << endl << endl;
+    info("Box is {} in each dimension.", box_side);
 
     this->vol = volume(box);
     this->nlist = NeighborList(natoms, rlist);
@@ -65,6 +65,8 @@ conf(c)
     this->tstat = Thermostat(reft, coll_freq, dt);
     this->vel = Velocity(v_nbins, v_max, v_min, v_outfile);
 
+    info("Computing random positions and velocities for atoms...");
+    auto start = high_resolution_clock::now(); 
     // Draw from a uniform distribution centered at the origin
     random_device rd;
     mt19937 gen(rd());
@@ -75,10 +77,6 @@ conf(c)
     Vector sumv(0.0, 0.0, 0.0);
     double sumv2 = 0.0;
     const double mindist2 = mindist*mindist;
-
-    // Generate random locations and velocities drawn from Gaussian distribution
-    cout << "Generating point initial configuration...";
-    
     int i = 0;
     while (i < natoms)
     {
@@ -116,6 +114,8 @@ retrypoint:
         i++;
 
     }
+    auto stop = high_resolution_clock::now(); 
+    info("Computed random data in {}ms.", duration_cast<microseconds>(stop - start).count() / 100);
 
     sumv /= this->natoms;
     sumv2 /= this->natoms;
@@ -131,14 +131,13 @@ retrypoint:
     this->ke = 0.5 * sumv2 / this->natoms;
 
     PdbFile pdb(pdbfile.c_str());
-    pdb.write_header(pdbfile, "LJ MD Simulator", "First frame");
+    pdb.write_header(pdbfile, "oneMD LJ Simulator", "First frame");
     for (int i = 0; i < natoms; i++)
     {
         pdb.write_line(i+1, "Ar", "LIG", 1, x[i], 1.00, 0.00);
     }
     pdb.close();
-
-    cout << "done." << endl << endl;
+    info("Created pdb file at {}.", pdbfile);
 }
 
 void System::CalcForce()

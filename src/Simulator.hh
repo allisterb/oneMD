@@ -2,11 +2,14 @@
 #define __SIMULATOR_H__
 
 #include <string>
+#include <chrono>
 #include "Enum.h"
 
 #include "spdlog/spdlog.h"
 
 using namespace std;
+using namespace std::chrono; 
+using namespace spdlog;
 
 BETTER_ENUM(Device, int, CPU, FPGA);
 
