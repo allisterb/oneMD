@@ -90,10 +90,11 @@ class System
 
     public:
         System(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
-        void CalcForce();
+        void CalcForceCPU();
+        void UpdateNeighborListCPU();
+        void IntegrateCPU(int a, bool tcoupl);
         void CloseXTC();
         void ErrorAnalysis(int nblocks);
-        void Integrate(int a, bool tcoupl);
         void NormalizeAverages();
         void NormalizeRdf();
         void NormalizeVel();
@@ -105,9 +106,8 @@ class System
         void Sample();
         void SampleRdf();
         void SampleVel();
-        void UpdateNeighborList();
         void WriteXTC(int step);
-        double GetTime();
+        int GetTime();
         CubicBox box;
 };
 
@@ -118,7 +118,7 @@ class LJ : public Simulator {
     void Compute (int, int, double[], double[], double, double[], double&, double&);
     void Update (int, int, double[], double[], double[], double[], double, double);
     double Distance (int, double[], double[], double[]);
-    void Run();
+    void CPURun();
     System sys;
     configuration conf;
 };

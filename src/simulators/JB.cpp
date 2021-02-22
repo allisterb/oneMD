@@ -237,7 +237,7 @@ bool JB::Initialize()
   return true;
 }
 
-void JB::Run() 
+void JB::CPURun() 
 {
   //
   //  This is the main time stepping loop:

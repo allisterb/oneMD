@@ -1,5 +1,8 @@
 #include "Simulator.hh"
 #include "xdrfile.h"
+
+NotImplementedException::NotImplementedException() : std::logic_error("Not yet implemented") { };
+
 Simulator::Simulator(const string _name, const int _nd, const int _np, const int _ts, const float _ts_delta, const Device _device) :
   name(_name),
   nd(_nd),
@@ -68,4 +71,14 @@ int Simulator::config_ini_handler(void* c, const char* section, const char* name
   configuration* pconfig = (configuration*) c;
   #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0  
   return 1;
+}
+
+void Simulator::GPURun()
+{
+  throw new NotImplementedException();
+}
+
+void Simulator::FPGARun()
+{
+  throw new NotImplementedException();
 }

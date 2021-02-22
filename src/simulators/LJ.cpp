@@ -138,7 +138,7 @@ retrypoint:
     info("Created pdb file at {}.", pdbfile);
 }
 
-void System::CalcForce()
+void System::CalcForceCPU()
 {
 
     int ncut = 0;
@@ -224,7 +224,7 @@ void System::CalcForce()
 }
 
 // Velocity Verlet integrator in two parts
-void System::Integrate(int a, bool tcoupl)
+void System::IntegrateCPU(int a, bool tcoupl)
 {
 
     if (a == 0) 
@@ -301,7 +301,7 @@ void System::PrintAverages()
     return;
 }
 
-void System::UpdateNeighborList()
+void System::UpdateNeighborListCPU()
 {
     this->nlist.Update(this->x, this->box);
     return;
@@ -423,8 +423,8 @@ LJ::LJ(configuration config, Device device) :
 
 bool LJ::Initialize() 
 {
-    info("Lennard-Jones simulation of {} atoms in a cubic box of dimension {} for {} steps of {}s = {}s.\nOriginal code by James W. Barnett https://github.com/wesbarnett/lennardjones", 
-    conf.natoms, sys.box[0], conf.nsteps, conf.dt, (conf.nsteps * conf.dt));
+    info("Lennard-Jones simulation of {} atoms in a cubic box of dimension {} for {} steps.\nOriginal code by James W. Barnett https://github.com/wesbarnett/lennardjones", 
+        conf.natoms, sys.box[0], conf.nsteps);
     if (!conf.debug)
     {
         info("Use --debug to print this simulator's complete configuration.");
@@ -482,26 +482,29 @@ bool LJ::Initialize()
 
 void LJ::Update (int nd, int np, double pos[], double vel[], double f[], double acc[], double mass, double dt)
 {}
+
 void LJ::Compute (int nd, int np, double pos[], double vel[], double mass, double f[], double &pot, double &kin)
 {}
-void LJ::Run() 
+
+void LJ::CPURun() 
 {
-    auto sim_start = std::chrono::high_resolution_clock::now();
+    info("Using OpenMP to parallelize calculating forces on each atom from neighboring atoms and for velocity Verlet integration.");
     info("Press Ctrl-C to stop simulation.");
-    sys.UpdateNeighborList();
-    sys.CalcForce();
+    auto sim_start = std::chrono::high_resolution_clock::now();
+    sys.UpdateNeighborListCPU();
+    sys.CalcForceCPU();
     sys.PrintHeader();
     sys.Print(0);
     for (int step = 1; step < conf.nsteps; step++)
     {
         // Main part of algorithm
-        sys.Integrate(0, conf.tcoupl);
-        sys.CalcForce();
-        sys.Integrate(1, conf.tcoupl);
+        sys.IntegrateCPU(0, conf.tcoupl);
+        sys.CalcForceCPU();
+        sys.IntegrateCPU(1, conf.tcoupl);
         // Update the neighbor list this step?
         if (step % conf.nlist == 0)
         {
-            sys.UpdateNeighborList();
+            sys.UpdateNeighborListCPU();
         }
         // Sample the RDF this step?
         if (( conf.dordf == true) && (step % conf.rdf_freq == 0) && (step > conf.eql_steps))
@@ -553,9 +556,9 @@ void LJ::Run()
     sys.PrintAverages();
 } 
 
-double System::GetTime()
+int System::GetTime()
 {
-    auto t = duration_cast<microseconds>(high_resolution_clock::now() - prev_time_point).count() / 1000.0;
-    prev_time_point = high_resolution_clock::now();
+    auto t = duration_cast<milliseconds>(high_resolution_clock::now() - prev_time_point).count();
+    //prev_time_point = high_resolution_clock::now();
     return t;
 }

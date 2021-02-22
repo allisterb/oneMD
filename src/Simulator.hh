@@ -52,6 +52,12 @@ typedef struct
     int v_freq;
 } configuration;
 
+class NotImplementedException : public std::logic_error
+{
+  public: 
+    NotImplementedException();
+};
+
 class Simulator {
   private:
   protected:
@@ -61,7 +67,9 @@ class Simulator {
     virtual bool Initialize() = 0;
     virtual void Compute (int nd, int np, double pos[], double vel[], double mass, double f[], double &pot, double &kin) = 0;
     virtual void Update (int nd, int np, double pos[], double vel[], double f[], double acc[], double mass, double dt) = 0;
-    virtual void Run() = 0;
+    virtual void CPURun() = 0;
+    virtual void GPURun();
+    virtual void FPGARun();
     const string name;
     const int np;
     const int nd;

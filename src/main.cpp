@@ -56,11 +56,11 @@ int main (int argc, char *argv[] )
     auto config_name = configArg.getValue();
     if (config_name != "")
     { 
-      info("Using configuration file {}.", config_name);
+      info("Using configuration file {} for options not specified in CLI.", config_name);
     }
     else
     {
-      info("No configuration file specified. Using default configuration.");
+      info("No configuration file specified. Using default configuration values for options not specified in CLI.");
     }
     config.natoms = np;
     config.nsteps = ts;
@@ -88,9 +88,16 @@ int main (int argc, char *argv[] )
 
   try
   {
-    sim->Initialize();
-    sim->Run();
-    return 0;
+    switch (config.device)
+    {
+      case Device::CPU:
+        sim->Initialize();
+        sim->CPURun();
+        return 0;
+      default:
+        error("Unknown device.");
+        return 2;
+    }
   }
   catch (std::exception &e) 
   { 
