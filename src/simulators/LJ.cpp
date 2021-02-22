@@ -25,6 +25,7 @@ System::System(configuration c, int natoms, int nsteps, double rho, double rcut,
 conf(c)
 {
     cout << setprecision(6) << fixed << right;
+    this->prev_time_point = high_resolution_clock::now();
     this->x.resize(natoms);
     this->v.resize(natoms);
     this->f.resize(natoms);
@@ -64,7 +65,7 @@ conf(c)
     this->vel = Velocity(v_nbins, v_max, v_min, v_outfile);
 
     info("Computing random positions and velocities for atoms...");
-    auto start = high_resolution_clock::now(); 
+    //auto start = high_resolution_clock::now(); 
     // Draw from a uniform distribution centered at the origin
     random_device rd;
     mt19937 gen(rd());
@@ -111,9 +112,8 @@ retrypoint:
 
         i++;
 
-    }
-    auto stop = high_resolution_clock::now(); 
-    info("Computed random data in {}ms.", duration_cast<microseconds>(stop - start).count() / 100);
+    } 
+    info("Computed random data in {}ms.", GetTime());
 
     sumv /= this->natoms;
     sumv2 /= this->natoms;
@@ -264,12 +264,13 @@ void System::Integrate(int a, bool tcoupl)
 void System::Print(int step)
 {
     cout << setw(14) << step;
-    cout << setw(14) << step*this->dt;
+    cout << setw(14) << (step*this->dt);
     cout << setw(14) << this->temp;
     cout << setw(14) << this->press;
     cout << setw(14) << this->ke;
     cout << setw(14) << this->pe;
-    cout << setw(14) << this->pe+this->ke << endl;
+    cout << setw(14) << this->pe+this->ke;
+    cout << setw(14) << this->GetTime() << "ms" << endl;
     return;
 }
 
@@ -281,7 +282,8 @@ void System::PrintHeader()
     cout << setw(14) << "Pressure";
     cout << setw(14) << "KE";
     cout << setw(14) << "PE";
-    cout << setw(14) << "Tot. Energy" << endl;
+    cout << setw(14) << "Tot. Energy";
+    cout << setw(14) << "Clock Time" << endl;
     return;
 }
 
@@ -473,7 +475,7 @@ bool LJ::Initialize()
         cout << setw(30) << left << "nbins = " << setw(30) << left << conf.v_nbins << endl;
         cout << setw(30) << left << "outfile = " << setw(30) << left << conf.v_outfile << endl;
         cout << setw(30) << left << "freq = " << setw(30) << left << conf.v_freq << endl;
-        cout << endl; 
+        cout << endl;
     }
     return true;
 }
@@ -484,6 +486,7 @@ void LJ::Compute (int nd, int np, double pos[], double vel[], double mass, doubl
 {}
 void LJ::Run() 
 {
+    auto sim_start = std::chrono::high_resolution_clock::now();
     info("Press Ctrl-C to stop simulation.");
     sys.UpdateNeighborList();
     sys.CalcForce();
@@ -531,9 +534,9 @@ void LJ::Run()
         }
 
     }
-
+    auto sim_time = duration_cast<microseconds>(high_resolution_clock::now() - sim_start).count() / 1000.0;
     sys.CloseXTC();
-
+    info("Simulation total time is {:03.0f}ms.", sim_time);
     if (conf.dordf == true)
     {
         sys.NormalizeRdf();
@@ -549,3 +552,10 @@ void LJ::Run()
     sys.NormalizeAverages();
     sys.PrintAverages();
 } 
+
+double System::GetTime()
+{
+    auto t = duration_cast<microseconds>(high_resolution_clock::now() - prev_time_point).count() / 1000.0;
+    prev_time_point = high_resolution_clock::now();
+    return t;
+}

@@ -28,9 +28,9 @@ int main (int argc, char *argv[] )
   {  
     CmdLine cmd("oneMD data-parallel molecular dynamics simulator.", ' ', "0.1", true);
     UnlabeledValueArg<string> simArg("simulator","Name of simulator to run.", true, "", "string", cmd);
-    ValueArg<int> ndArg("", "dimensions","Number of dimensions for simulation from 1 - 3.",false, 2,"integer");
-    ValueArg<int> npArg("n", "particles","Number of particles for simulation.",false, 100,"integer");
-    ValueArg<int> tsArg("t", "timesteps","Number of time steps for simulation.",false, 1000,"integer");
+    ValueArg<int> ndArg("", "nd","Number of dimensions for simulation from 1 - 3.",false, 2,"integer");
+    ValueArg<int> npArg("n", "np","Number of particles for simulation.",false, 100,"integer");
+    ValueArg<int> tsArg("t", "ts","Number of time steps for simulation.",false, 1000,"integer");
     ValueArg<double> tsdeltaArg("", "dt","Timestep delta in seconds.",false, 0.005,"integer");
     ValueArg<string> devArg("e", "device","Name of hardware device, accelerator or library to run simulation on.", false, "CPU", "string");
     ValueArg<string> configArg("c","config","Name of configuration file for simulation,",false,"","string");
@@ -64,7 +64,8 @@ int main (int argc, char *argv[] )
     }
     config.natoms = np;
     config.nsteps = ts;
-    config.dt = ts_delta; 
+    config.dt = ts_delta;
+    config.device = device;
     if (sim_name == "JB")
     {
       sim = make_unique<JB> (nd, np, ts, ts_delta, device);

@@ -86,6 +86,8 @@ class System
         vector <Vector> x; // positions
         Velocity vel;
         XDRFILE *xd;
+        std::chrono::time_point<std::chrono::high_resolution_clock> prev_time_point;
+
     public:
         System(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
         void CalcForce();
@@ -105,6 +107,7 @@ class System
         void SampleVel();
         void UpdateNeighborList();
         void WriteXTC(int step);
+        double GetTime();
         CubicBox box;
 };
 
