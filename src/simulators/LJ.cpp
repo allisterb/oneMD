@@ -23,6 +23,9 @@
 
 System::System(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile) :
 conf(c)
+{}
+    
+void System::Initialize(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile)
 {
     cout << setprecision(6) << fixed << right;
     this->prev_time_point = high_resolution_clock::now();
@@ -261,6 +264,12 @@ void System::IntegrateCPU(int a, bool tcoupl)
     return;
 }
 
+void System::UpdateNeighborListCPU()
+{
+    this->nlist.Update(this->x, this->box);
+    return;
+}
+
 void System::Print(int step)
 {
     cout << setw(14) << step;
@@ -298,12 +307,6 @@ void System::PrintAverages()
     cout << setw(20) << "Kinetic Energy: " << setw(14) << this->KineticEnergy.GetAvg() << " +/- " << setw(14) << this->KineticEnergy.GetError() << endl;
     cout << setw(20) << "Potential Energy: " << setw(14) << this->PotentialEnergy.GetAvg() << " +/- " << setw(14) << this->PotentialEnergy.GetError() << endl;
     cout << setw(20) << "Total Energy: " << setw(14) << this->TotalEnergy.GetAvg() << " +/- " << setw(14) << this->TotalEnergy.GetError() << endl;
-    return;
-}
-
-void System::UpdateNeighborListCPU()
-{
-    this->nlist.Update(this->x, this->box);
     return;
 }
 
@@ -423,7 +426,7 @@ LJ::LJ(configuration config, Device device) :
 
 bool LJ::Initialize() 
 {
-    info("Lennard-Jones simulation of {} atoms in a cubic box of dimension {01.1f} for {} steps.\nOriginal code by James W. Barnett https://github.com/wesbarnett/lennardjones", 
+    info("Lennard-Jones simulation of {} atoms in a cubic box of dimension {:01.1f} for {} steps.\nOriginal code by James W. Barnett https://github.com/wesbarnett/lennardjones", 
         conf.natoms, sys.box[0], conf.nsteps);
     if (!conf.debug)
     {
@@ -477,6 +480,8 @@ bool LJ::Initialize()
         cout << setw(30) << left << "freq = " << setw(30) << left << conf.v_freq << endl;
         cout << endl;
     }
+    auto config = conf;
+    sys.Initialize(config, config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile);
     return true;
 }
 
