@@ -1,10 +1,10 @@
 # oneMD
 oneMD is a molecular dynamics simulator designed to take advantage of SIMD and GPU and FPGA hardware data parallelism and acceleration. Unlike other molecular dynamics simulators like NAMD or omegagene which rely on hardware acceleration via OpenMP or CUDA, oneMD is a new simulator written in DPC++ designed especially to utilize diverse kinds of hardware acceleration across multiple architectures .
 
-The molecular data and trajectories are saved in standard .pdb and .xtc formats that can be viewed in programs like VMD.
+The molecular data and trajectories are saved in standard [PDB](https://pdb101.rcsb.org/learn/guide-to-understanding-pdb-data/introduction) and .xtc formats that can be viewed in programs like [VMD](https://www.ks.uiuc.edu/Research/vmd/).
 
 ## Requirements
-oneMD is cross-platform and can be built with any well-known C++ compiler including MSVC. If you are using it on your local machine you will need a oneAPI environment setup to build with GPU and FPGA acceleration. If you don't use a oneAPI environment then only OpenMP acceleration support will be built. 
+oneMD is cross-platform and cross-arch can be built with any well-known C++ compiler including MSVC. If you are using it on your local machine you will need a oneAPI environment setup with the DPC++ compiler to build with GPU and FPGA acceleration. If you don't use a oneAPI environment then only OpenMP acceleration support will be built. 
 ## Installation
 * Clone the repo including all sub-modules:
  ````

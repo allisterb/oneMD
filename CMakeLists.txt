@@ -70,9 +70,11 @@ set (INIH_SRC ext/inih/ini.c)
 add_library (inih STATIC ${INIH_SRC})
 target_include_directories(inih PRIVATE ext/inih)
 
+set (DPC_SIMS_SRC src/simulators/JB_DPC.cpp src/simulators/LJ_DPC.cpp)
 set (CPP_SIMS_SRC src/simulators/JB.cpp src/simulators/LJ.cpp)
+
 if(USE_ONEAPI)
-  set (SIMS_SRC ${CPP_SIMS_SRC})
+  set (SIMS_SRC ${DPC_SIMS_SRC})
 else()
   set (SIMS_SRC ${CPP_SIMS_SRC})
 endif()
