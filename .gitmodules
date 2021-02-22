@@ -3,7 +3,7 @@
 	url = https://github.com/ebertolazzi/embedFiglet.git
 [submodule "ext/spdlog"]
 	path = ext/spdlog
-	url = https://github.com/gabime/spdlog.git
+	url = https://github.com/allisterb/spdlog.git
 [submodule "ext/wblennardjones"]
 	path = ext/test_sims/wblennardjones
 	url = https://github.com/allisterb/lennardjones.git
