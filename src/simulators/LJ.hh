@@ -108,6 +108,7 @@ class System
         void SampleVel();
         void WriteXTC(int step);
         int GetTime();
+        void ResetTimer();
         CubicBox box;
 };
 

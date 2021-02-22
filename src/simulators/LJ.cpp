@@ -56,7 +56,7 @@ conf(c)
     this->box[X] = box_side;
     this->box[Y] = box_side;
     this->box[Z] = box_side;
-    info("Box is {} in each dimension.", box_side);
+    info("Box is {:01.1f} in each dimension.", box_side);
 
     this->vol = volume(box);
     this->nlist = NeighborList(natoms, rlist);
@@ -64,8 +64,7 @@ conf(c)
     this->tstat = Thermostat(reft, coll_freq, dt);
     this->vel = Velocity(v_nbins, v_max, v_min, v_outfile);
 
-    info("Computing random positions and velocities for atoms...");
-    //auto start = high_resolution_clock::now(); 
+    info("Computing random positions and velocities for {} atoms...", natoms);
     // Draw from a uniform distribution centered at the origin
     random_device rd;
     mt19937 gen(rd());
@@ -113,7 +112,8 @@ retrypoint:
         i++;
 
     } 
-    info("Computed random data in {}ms.", GetTime());
+    info("Computed random positions and velocities for {} atoms in {}ms.", natoms, GetTime());
+    System::ResetTimer();
 
     sumv /= this->natoms;
     sumv2 /= this->natoms;
@@ -135,7 +135,7 @@ retrypoint:
         pdb.write_line(i+1, "Ar", "LIG", 1, x[i], 1.00, 0.00);
     }
     pdb.close();
-    info("Created pdb file at {}.", pdbfile);
+    info("Created .pdb file at {}.", pdbfile);
 }
 
 void System::CalcForceCPU()
@@ -423,7 +423,7 @@ LJ::LJ(configuration config, Device device) :
 
 bool LJ::Initialize() 
 {
-    info("Lennard-Jones simulation of {} atoms in a cubic box of dimension {} for {} steps.\nOriginal code by James W. Barnett https://github.com/wesbarnett/lennardjones", 
+    info("Lennard-Jones simulation of {} atoms in a cubic box of dimension {01.1f} for {} steps.\nOriginal code by James W. Barnett https://github.com/wesbarnett/lennardjones", 
         conf.natoms, sys.box[0], conf.nsteps);
     if (!conf.debug)
     {
@@ -559,6 +559,11 @@ void LJ::CPURun()
 int System::GetTime()
 {
     auto t = duration_cast<milliseconds>(high_resolution_clock::now() - prev_time_point).count();
-    //prev_time_point = high_resolution_clock::now();
     return t;
+}
+
+void System::ResetTimer()
+{
+    info("Resetting timer.");
+    System::prev_time_point = high_resolution_clock::now();
 }
