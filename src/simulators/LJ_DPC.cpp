@@ -20,6 +20,7 @@
  */
 
 #include "LJ.hh"
+#include "dpc_common.hpp"
 
 System::System(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile) :
 conf(c)

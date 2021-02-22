@@ -4,10 +4,12 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/src",
                 "${workspaceFolder}/ext/spdlog/include",
                 "${workspaceFolder}/ext/libxdrfile/include",
                 "${workspaceFolder}/ext/inih",
-                "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/2021.1.2/linux/compiler/include/"
+                "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/latest/linux/compiler/include/",
+                "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/latest/linux/include/sycl"
 
 
             ],
