@@ -26,14 +26,14 @@ int main (int argc, char *argv[] )
   auto config = Simulator::default_config();
   try 
   {  
-    CmdLine cmd("oneMD data-parallel molecular dynamics simulator.", ' ', "0.1", true);
-    UnlabeledValueArg<string> simArg("simulator","Name of simulator to run.", true, "", "string", cmd);
-    ValueArg<string> devArg("", "device","Name of hardware device to run simulation on. Can be host_cpu, cpu, gpu, or fpga. Alternatively use the bool flag selectors e.g. -0 or -1.", false, "HOST_CPU", "string");
+    CmdLine cmd("oneMD is a data-parallel molecular dynamics simulator for Intel oneAPI.", ' ', "0.1", true);
+    UnlabeledValueArg<string> simArg("simulator","Name of simulator to run. Defaults to LJ (Lennard-Jones) atoms in cubic box.", false, "lj", "string", cmd);
+    ValueArg<string> devArg("", "device","Name of hardware device to run simulation on. Can be host_cpu, cpu, gpu, or fpga. Default is host_cpu. Alternatively use the bool flag selectors e.g. -0 or -1.", false, "HOST_CPU", "string");
     ValueArg<string> configArg("","config","Name of configuration file for simulation,",false,"","string");
-    ValueArg<int> ndArg("", "nd","Number of dimensions for simulation from 1-3.",false, 3,"integer");
-    ValueArg<int> npArg("", "np","Number of particles for simulation.",false, 100,"integer");
-    ValueArg<int> tsArg("", "ts","Number of time steps for simulation.",false, 10000,"integer");
-    ValueArg<double> tsdeltaArg("", "dt","Timestep delta in seconds for simulation.",false, 0.005, "double");
+    ValueArg<int> ndArg("", "nd","Number of dimensions for simulation from 1-3. Default is 3.",false, 3,"integer");
+    ValueArg<int> npArg("", "np","Number of particles for simulation. Default is 100",false, 100,"integer");
+    ValueArg<int> tsArg("", "ts","Number of time steps for simulation. Default is 10000.",false, 10000,"integer");
+    ValueArg<double> tsdeltaArg("", "dt","Timestep delta in seconds for simulation. Default is 0.005.",false, 0.005, "double");
     SwitchArg debugArg("d","debug","Enable debug-level logging.", cmd, false);
     SwitchArg hostCPUDeviceArg("0","host-cpu","Select the host CPU device.", cmd, false);
     SwitchArg cpuDeviceArg("1","cpu","Select the SYCL CPU device.", cmd, false);

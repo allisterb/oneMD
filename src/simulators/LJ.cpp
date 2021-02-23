@@ -315,23 +315,19 @@ void System::UpdateNeighborListHostCPU()
 
 void System::CalcForceHostCPU()
 {
-
     int ncut = 0;
     double pe = 0.0;
     for (int i = 0; i < this->natoms; i++)
     {
         this->f[i] = 0.0;
     }
-
     #pragma omp parallel
     {
-
         vector <Vector> f_thread(natoms);
         for (int i = 0; i < this->natoms; i++)
         {
             f_thread[i] = 0.0;
         }
-
         // Uses neighbor lists to calculate forces and energies. We didn't
         // double count the atoms on the neighbor list, so we have to look at
         // each atom's list. The last atom never has it's own list since it will
@@ -340,34 +336,25 @@ void System::CalcForceHostCPU()
         #pragma omp for schedule(guided, CHUNKSIZE) reduction(+:ncut,pe)
         for (int i = 0; i < this->natoms-1; i++)
         {
-
             for (int neighb = 0; neighb < nlist.GetSize(i); neighb++)
             {
-
                 int j = nlist.GetNeighbor(i, neighb);
                 Vector dr = pbc(x[i] - x[j], box);
                 double r2 = dot(dr,dr);
-
                 if (r2 <= this->rcut2)
                 {
-
                     double r2i = 1.0/r2;
                     double r6i = pow(r2i,3);
-                    Vector fr = 48.0 * r2i * r6i * (r6i - 0.5) * dr;
-                    
+                    Vector fr = 48.0 * r2i * r6i * (r6i - 0.5) * dr;   
                     // We have to count the force both on atom i from j and on j
                     // from i, since we didn't double count on the neighbor
                     // lists
                     f_thread[i] += fr;
                     f_thread[j] -= fr;
-
                     pe += 4.0*r6i*(r6i-1.0) - this->ecut;
                     ncut++;
-
                 }
-
             }
-
         }
 
         #pragma omp critical
@@ -398,7 +385,6 @@ void System::CalcForceHostCPU()
 
 }
 
-// Velocity Verlet integrator in two parts
 void System::IntegrateHostCPU(int a, bool tcoupl)
 {
 
@@ -563,7 +549,7 @@ void LJ::Compute (int nd, int np, double pos[], double vel[], double mass, doubl
 void LJ::HostCPURun() 
 {
     info("Using OpenMP to parallelize calculating forces on each atom from neighboring atoms and for velocity Verlet integration.");
-    info("Press Ctrl-C to stop simulation.");
+    info("Press Ctrl-C to abort simulation.");
     auto sim_start = std::chrono::high_resolution_clock::now();
     sys.UpdateNeighborListHostCPU();
     sys.CalcForceHostCPU();
