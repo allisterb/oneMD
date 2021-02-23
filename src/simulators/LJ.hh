@@ -41,6 +41,10 @@
 
 #include "spdlog/spdlog.h"
 
+#ifdef USE_ONEAPI
+    #include "dpc_common.hpp"
+#endif
+
 using namespace std;
 using namespace spdlog;
 
