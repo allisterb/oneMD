@@ -7,7 +7,8 @@
 
 #include "spdlog/spdlog.h"
 #ifdef USE_ONEAPI
-#include "my_dpc_common.hpp"
+#include "dpc_common.hpp"
+#include <CL/sycl.hpp>
 #endif
 
 using namespace std;

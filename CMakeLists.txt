@@ -123,6 +123,7 @@ target_include_directories(${TGT} PRIVATE
 	  ext/inih
     ext/inih/cpp
     src
+    /opt/intel/oneapi/compiler/latest/linux/include/sycl
 )
 target_link_libraries(${TGT} PUBLIC 
     ${CMAKE_THREAD_LIBS_INIT}

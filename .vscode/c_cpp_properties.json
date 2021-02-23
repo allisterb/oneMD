@@ -9,6 +9,7 @@
                 "${workspaceFolder}/ext/libxdrfile/include",
                 "${workspaceFolder}/ext/inih",
                 "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/latest/linux/compiler/include/",
+                "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/latest/linux/include/",
                 "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/latest/linux/include/sycl"
 
 

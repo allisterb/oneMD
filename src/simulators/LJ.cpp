@@ -563,8 +563,12 @@ void LJ::HostCPURun()
 
 void LJ::CPURun() 
 {
-    info("Using SYCL to parallelize calculating forces on each atom from neighboring atoms and for velocity Verlet integration.");
-    info("Press Ctrl-C to stop simulation.");
+    sycl::queue Q{ sycl::cpu_selector{} };
+    auto device_name = Q.get_device().get_info<sycl::info::device::name>();
+    info("Using CPU device: {}.", device_name);
+    info("Using SYCL CPU device to parallelize calculating forces on each atom from neighboring atoms and for velocity Verlet integration.");
+    info("Press Ctrl-C to abort simulation.");
+    dpc_common::TimeInterval t0;
     auto sim_start = std::chrono::high_resolution_clock::now();
     sys.UpdateNeighborListCPU();
     sys.CalcForceCPU();
