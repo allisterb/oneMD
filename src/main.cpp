@@ -28,20 +28,21 @@ int main (int argc, char *argv[] )
   {  
     CmdLine cmd("oneMD data-parallel molecular dynamics simulator.", ' ', "0.1", true);
     UnlabeledValueArg<string> simArg("simulator","Name of simulator to run.", true, "", "string", cmd);
-    ValueArg<int> ndArg("", "nd","Number of dimensions for simulation from 1 - 3.",false, 2,"integer");
-    ValueArg<int> npArg("n", "np","Number of particles for simulation.",false, 100,"integer");
-    ValueArg<int> tsArg("t", "ts","Number of time steps for simulation.",false, 1000,"integer");
-    ValueArg<double> tsdeltaArg("", "dt","Timestep delta in seconds.",false, 0.005,"integer");
-    ValueArg<string> devArg("e", "device","Name of hardware device, accelerator or library to run simulation on.", false, "HOST_CPU", "string");
-    ValueArg<string> configArg("c","config","Name of configuration file for simulation,",false,"","string");
+    ValueArg<string> devArg("", "device","Name of hardware device to run simulation on. Can be host_cpu, cpu, gpu, or fpga. Alternatively use the bool flag selectors e.g. -0 or -c.", false, "HOST_CPU", "string");
+    ValueArg<string> configArg("","config","Name of configuration file for simulation,",false,"","string");
+    ValueArg<int> ndArg("", "nd","Number of dimensions for simulation from 1-3.",false, 3,"integer");
+    ValueArg<int> npArg("", "np","Number of particles for simulation.",false, 100,"integer");
+    ValueArg<int> tsArg("", "ts","Number of time steps for simulation.",false, 10000,"integer");
+    ValueArg<double> tsdeltaArg("", "dt","Timestep delta in seconds for simulation.",false, 0.005, "double");
     SwitchArg debugArg("d","debug","Enable debug-level logging.", cmd, false);
     SwitchArg hostCPUDeviceArg("0","host-cpu","Select the host CPU device.", cmd, false);
-    SwitchArg cpuDeviceArg("1","cpu","Select the SYCL CPU device.", cmd, false);
+    SwitchArg cpuDeviceArg("c","cpu","Select the SYCL CPU device.", cmd, false);
+    cmd.add(devArg);
     cmd.add(ndArg);
     cmd.add(npArg);
     cmd.add(tsArg);
     cmd.add(tsdeltaArg);
-    cmd.add(devArg);
+  
     cmd.parse(argc, argv);
     auto debugLog = debugArg.getValue();
     if (debugLog) {
@@ -105,6 +106,10 @@ int main (int argc, char *argv[] )
         sim->HostCPURun();
         return 0;
 #ifdef USE_ONEAPI
+      case Device::CPU:
+        sim->Initialize();
+        sim->CPURun();
+        return 0;
       default:
         error("The {} device is not implemented.", config.device._to_string());
         return 2;

@@ -23,7 +23,11 @@
 
 System::System(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile) :
 conf(c)
-{}
+{
+#ifdef USE_ONEAPI
+    q = { sycl::cpu_selector{} };
+#endif
+}
     
 void System::Initialize(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile)
 {
@@ -139,135 +143,6 @@ retrypoint:
     }
     pdb.close();
     info("Created .pdb file at {}.", pdbfile);
-}
-
-void System::CalcForceHostCPU()
-{
-
-    int ncut = 0;
-    double pe = 0.0;
-    for (int i = 0; i < this->natoms; i++)
-    {
-        this->f[i] = 0.0;
-    }
-
-    #pragma omp parallel
-    {
-
-        vector <Vector> f_thread(natoms);
-        for (int i = 0; i < this->natoms; i++)
-        {
-            f_thread[i] = 0.0;
-        }
-
-        // Uses neighbor lists to calculate forces and energies. We didn't
-        // double count the atoms on the neighbor list, so we have to look at
-        // each atom's list. The last atom never has it's own list since it will
-        // always be on at least one other atom's list (or it is too far away to
-        // interact with any other atom)
-        #pragma omp for schedule(guided, CHUNKSIZE) reduction(+:ncut,pe)
-        for (int i = 0; i < this->natoms-1; i++)
-        {
-
-            for (int neighb = 0; neighb < nlist.GetSize(i); neighb++)
-            {
-
-                int j = nlist.GetNeighbor(i, neighb);
-                Vector dr = pbc(x[i] - x[j], box);
-                double r2 = dot(dr,dr);
-
-                if (r2 <= this->rcut2)
-                {
-
-                    double r2i = 1.0/r2;
-                    double r6i = pow(r2i,3);
-                    Vector fr = 48.0 * r2i * r6i * (r6i - 0.5) * dr;
-                    
-                    // We have to count the force both on atom i from j and on j
-                    // from i, since we didn't double count on the neighbor
-                    // lists
-                    f_thread[i] += fr;
-                    f_thread[j] -= fr;
-
-                    pe += 4.0*r6i*(r6i-1.0) - this->ecut;
-                    ncut++;
-
-                }
-
-            }
-
-        }
-
-        #pragma omp critical
-        {
-
-            for (int i = 0; i < natoms; i++)
-            {
-                this->f[i] += f_thread[i];
-            }
-
-        }
-
-    }
-
-    double vir = 0.0;
-    #pragma omp parallel for schedule(guided, CHUNKSIZE) reduction(+:vir)
-    for (int i = 0; i < natoms; i++)
-    {
-        vir += dot(f[i], x[i]);
-    }
-    vir *= oneSixth;
-    this->press = this->rhokB * this->temp + vir/this->vol + this->ptail;
-
-    ncut *= inatomsm1;
-    this->pe = pe/this->natoms + this->etail + halfecut*(double)ncut; 
-
-    return;
-
-}
-
-// Velocity Verlet integrator in two parts
-void System::IntegrateHostCPU(int a, bool tcoupl)
-{
-
-    if (a == 0) 
-    {
-        #pragma omp parallel for schedule(guided, CHUNKSIZE)
-        for (int i = 0; i < this->natoms; i++)
-        {
-            this->x[i] += this->v[i]*this->dt + this->f[i]*this->halfdt2;
-            this->v[i] += this->f[i]*this->halfdt;
-        }
-    }
-    else if (a == 1)
-    {
-
-        double sumv2 = 0.0;
-
-        #pragma omp parallel for schedule(guided, CHUNKSIZE) reduction(+:sumv2)
-        for (int i = 0; i < natoms; i++)
-        {
-            this->v[i] += this->f[i]*this->halfdt;
-            sumv2 += dot(this->v[i], this->v[i]);
-        }
-
-        if (tcoupl == true)
-        {
-            tstat.DoCollisions(v);
-        }
-
-        this->temp = sumv2 * this->i3natoms;
-        this->ke = sumv2 * this->i2natoms;
-
-    }
-
-    return;
-}
-
-void System::UpdateNeighborListHostCPU()
-{
-    this->nlist.Update(this->x, this->box);
-    return;
 }
 
 void System::Print(int step)
@@ -418,7 +293,6 @@ void System::NormalizeAverages()
     return;
 }
 
-
 int System::GetTime()
 {
     auto t = duration_cast<milliseconds>(high_resolution_clock::now() - prev_time_point).count();
@@ -431,11 +305,191 @@ void System::ResetTimer()
     System::prev_time_point = high_resolution_clock::now();
 }
 
+void System::UpdateNeighborListHostCPU()
+{
+    this->nlist.UpdateHostCPU(this->x, this->box);
+    return;
+}
+
+void System::CalcForceHostCPU()
+{
+
+    int ncut = 0;
+    double pe = 0.0;
+    for (int i = 0; i < this->natoms; i++)
+    {
+        this->f[i] = 0.0;
+    }
+
+    #pragma omp parallel
+    {
+
+        vector <Vector> f_thread(natoms);
+        for (int i = 0; i < this->natoms; i++)
+        {
+            f_thread[i] = 0.0;
+        }
+
+        // Uses neighbor lists to calculate forces and energies. We didn't
+        // double count the atoms on the neighbor list, so we have to look at
+        // each atom's list. The last atom never has it's own list since it will
+        // always be on at least one other atom's list (or it is too far away to
+        // interact with any other atom)
+        #pragma omp for schedule(guided, CHUNKSIZE) reduction(+:ncut,pe)
+        for (int i = 0; i < this->natoms-1; i++)
+        {
+
+            for (int neighb = 0; neighb < nlist.GetSize(i); neighb++)
+            {
+
+                int j = nlist.GetNeighbor(i, neighb);
+                Vector dr = pbc(x[i] - x[j], box);
+                double r2 = dot(dr,dr);
+
+                if (r2 <= this->rcut2)
+                {
+
+                    double r2i = 1.0/r2;
+                    double r6i = pow(r2i,3);
+                    Vector fr = 48.0 * r2i * r6i * (r6i - 0.5) * dr;
+                    
+                    // We have to count the force both on atom i from j and on j
+                    // from i, since we didn't double count on the neighbor
+                    // lists
+                    f_thread[i] += fr;
+                    f_thread[j] -= fr;
+
+                    pe += 4.0*r6i*(r6i-1.0) - this->ecut;
+                    ncut++;
+
+                }
+
+            }
+
+        }
+
+        #pragma omp critical
+        {
+
+            for (int i = 0; i < natoms; i++)
+            {
+                this->f[i] += f_thread[i];
+            }
+
+        }
+
+    }
+
+    double vir = 0.0;
+    #pragma omp parallel for schedule(guided, CHUNKSIZE) reduction(+:vir)
+    for (int i = 0; i < natoms; i++)
+    {
+        vir += dot(f[i], x[i]);
+    }
+    vir *= oneSixth;
+    this->press = this->rhokB * this->temp + vir/this->vol + this->ptail;
+
+    ncut *= inatomsm1;
+    this->pe = pe/this->natoms + this->etail + halfecut*(double)ncut; 
+
+    return;
+
+}
+
+// Velocity Verlet integrator in two parts
+void System::IntegrateHostCPU(int a, bool tcoupl)
+{
+
+    if (a == 0) 
+    {
+        #pragma omp parallel for schedule(guided, CHUNKSIZE)
+        for (int i = 0; i < this->natoms; i++)
+        {
+            this->x[i] += this->v[i]*this->dt + this->f[i]*this->halfdt2;
+            this->v[i] += this->f[i]*this->halfdt;
+        }
+    }
+    else if (a == 1)
+    {
+
+        double sumv2 = 0.0;
+
+        #pragma omp parallel for schedule(guided, CHUNKSIZE) reduction(+:sumv2)
+        for (int i = 0; i < natoms; i++)
+        {
+            this->v[i] += this->f[i]*this->halfdt;
+            sumv2 += dot(this->v[i], this->v[i]);
+        }
+
+        if (tcoupl == true)
+        {
+            tstat.DoCollisions(v);
+        }
+
+        this->temp = sumv2 * this->i3natoms;
+        this->ke = sumv2 * this->i2natoms;
+
+    }
+
+    return;
+}
+
+#ifdef USE_ONEAPI
+void System::UpdateNeighborListCPU()
+{
+    throw new NotImplementedException();
+}
+
+void System::CalcForceCPU()
+{
+    throw new NotImplementedException();
+}
+
+void System::IntegrateCPU(int a, bool tcoupl)
+{
+    throw new NotImplementedException();
+}
+
+void System::UpdateNeighborListGPU()
+{
+    throw new NotImplementedException();
+}
+
+void System::CalcForceGPU()
+{
+    throw new NotImplementedException();
+}
+
+void System::IntegrateGPU(int a, bool tcoupl)
+{
+    throw new NotImplementedException();
+}
+
+void System::UpdateNeighborListFPGA()
+{
+    throw new NotImplementedException();
+}
+
+void System::CalcForceFPGA()
+{
+    throw new NotImplementedException();
+}
+
+void System::IntegrateFPGA(int a, bool tcoupl)
+{
+    throw new NotImplementedException();
+}
+#endif
+
 LJ::LJ(configuration config, Device device) : 
     Simulator("LJ", config, device),
     conf(config),
     sys(config, config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile)
-{}
+{
+#ifdef USE_ONEAPI
+    q = { sycl::cpu_selector{} };
+#endif
+}
 
 bool LJ::Initialize() 
 {
@@ -577,10 +631,8 @@ void LJ::HostCPURun()
 #ifdef USE_ONEAPI
 void LJ::CPURun() 
 {
-    sycl::queue q{ sycl::cpu_selector{} };
     auto device_name = q.get_device().get_info<sycl::info::device::name>();
     info("Using CPU device: {}.", device_name);
-    info("Using SYCL CPU device to parallelize calculating forces on each atom from neighboring atoms and for velocity Verlet integration.");
     info("Press Ctrl-C to abort simulation.");
     auto sim_start = std::chrono::high_resolution_clock::now();
     sys.UpdateNeighborListHostCPU();

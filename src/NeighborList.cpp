@@ -21,6 +21,10 @@
  */
 
 #include "NeighborList.hh"
+#ifdef USE_ONEAPI
+#include "dpc_common.hpp"
+#include <CL/sycl.hpp>
+#endif
 
 NeighborList::NeighborList()
 {
@@ -33,9 +37,8 @@ NeighborList::NeighborList(int natoms, double rlist)
     return;
 }
 
-void NeighborList::Update(vector <Vector> &x, CubicBox &box)
+void NeighborList::UpdateHostCPU(vector <Vector> &x, CubicBox &box)
 {
-    
     #pragma omp parallel for schedule(guided, CHUNKSIZE)
     for (unsigned int i = 0; i < this->list.size(); i++)
     {
@@ -59,7 +62,6 @@ void NeighborList::Update(vector <Vector> &x, CubicBox &box)
 
     return;
 }
-
 
 int NeighborList::GetSize(int i)
 {

@@ -37,7 +37,7 @@ class NeighborList {
         int GetNeighbor(int i, int j);
         int GetSize(int i);
         void Init(int natoms, double rlist);
-        void Update(vector <Vector> &x, CubicBox &box);
+        void UpdateHostCPU(vector <Vector> &x, CubicBox &box);
 };
 
 #endif
