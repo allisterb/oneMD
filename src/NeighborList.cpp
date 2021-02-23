@@ -39,12 +39,16 @@ NeighborList::NeighborList(int natoms, double rlist)
 
 void NeighborList::UpdateHostCPU(vector <Vector> &x, CubicBox &box)
 {
+#ifndef USE_ONEAPI
     #pragma omp parallel for schedule(guided, CHUNKSIZE)
     for (unsigned int i = 0; i < this->list.size(); i++)
     {
         this->list.at(i).resize(0);
     }
-
+#else
+    std::for_each(oneapi::dpl::execution::par, this->list.begin(), this->list.end(), 
+        [](vector <int> &v){v.resize(0);});
+#endif
     // Atoms are not double counted in the neighbor list. That is, when atom j
     // is on atom i's list, the opposite is not true.
     #pragma omp parallel for schedule(guided, CHUNKSIZE)

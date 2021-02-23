@@ -23,6 +23,13 @@
 #ifndef NEIGHBORLIST_H
 #define NEIGHBORLIST_H
 
+#ifdef USE_ONEAPI
+// oneDPL headers should be included before standard headers
+#include <oneapi/dpl/algorithm>
+#include <oneapi/dpl/execution>
+#include <oneapi/dpl/iterator>
+#endif
+
 #include "Vector.hh"
 #include "CubicBox.hh"
 
