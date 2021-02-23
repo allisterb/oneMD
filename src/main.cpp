@@ -35,6 +35,8 @@ int main (int argc, char *argv[] )
     ValueArg<string> devArg("e", "device","Name of hardware device, accelerator or library to run simulation on.", false, "HOST_CPU", "string");
     ValueArg<string> configArg("c","config","Name of configuration file for simulation,",false,"","string");
     SwitchArg debugArg("d","debug","Enable debug-level logging.", cmd, false);
+    SwitchArg hostCPUDeviceArg("0","host-cpu","Select the host CPU device.", cmd, false);
+    SwitchArg cpuDeviceArg("1","cpu","Select the SYCL CPU device.", cmd, false);
     cmd.add(ndArg);
     cmd.add(npArg);
     cmd.add(tsArg);
@@ -53,6 +55,14 @@ int main (int argc, char *argv[] )
     auto ts = tsArg.getValue();
     auto ts_delta = tsdeltaArg.getValue();
     auto device = Device::_from_string(Util::upper(devArg.getValue()).c_str());
+    if (hostCPUDeviceArg.getValue())
+    {
+      device = Device::HOST_CPU;
+    }
+    else if (cpuDeviceArg.getValue())
+    {
+      device = Device::CPU;
+    }
     auto config_name = configArg.getValue();
     if (config_name != "")
     { 
@@ -94,9 +104,15 @@ int main (int argc, char *argv[] )
         sim->Initialize();
         sim->HostCPURun();
         return 0;
+#ifdef USE_ONEAPI
       default:
-        error("Unsupported device.");
+        error("The {} device is not implemented.", config.device._to_string());
         return 2;
+#else
+      default:
+        error("The {} device is not enabled in this build of oneAPI.", config.device._to_string());
+        return 2;
+#endif
     }
   }
   catch (std::exception &e) 
