@@ -561,6 +561,76 @@ void LJ::HostCPURun()
     sys.PrintAverages();
 } 
 
+void LJ::CPURun() 
+{
+    info("Using SYCL to parallelize calculating forces on each atom from neighboring atoms and for velocity Verlet integration.");
+    info("Press Ctrl-C to stop simulation.");
+    auto sim_start = std::chrono::high_resolution_clock::now();
+    sys.UpdateNeighborListCPU();
+    sys.CalcForceCPU();
+    sys.PrintHeader();
+    sys.Print(0);
+    for (int step = 1; step < conf.nsteps; step++)
+    {
+        // Main part of algorithm
+        sys.IntegrateCPU(0, conf.tcoupl);
+        sys.CalcForceCPU();
+        sys.IntegrateCPU(1, conf.tcoupl);
+        // Update the neighbor list this step?
+        if (step % conf.nlist == 0)
+        {
+            sys.UpdateNeighborListCPU();
+        }
+        // Sample the RDF this step?
+        if (( conf.dordf == true) && (step % conf.rdf_freq == 0) && (step > conf.eql_steps))
+        {
+            sys.SampleRdf();
+        }
+
+        // Sample the velocity distribution this step?
+        if (( conf.dovel == true) && (step % conf.v_freq == 0) && (step > conf.eql_steps))
+        {
+            sys.SampleVel();
+        }
+
+        // Do other sampling this step?
+        if ( (step % conf.step_sample) == 0 && (step > conf.eql_steps) )
+        {
+            sys.Sample();
+        }
+
+        // Print to the log this step?
+        if (step % conf.nlog == 0)
+        {
+            sys.Print(step);
+        }
+
+        // Write to the xtc file this step?
+        if (step % conf.nxtc == 0)
+        {
+            sys.WriteXTC(step);
+        }
+
+    }
+    auto sim_time = duration_cast<microseconds>(high_resolution_clock::now() - sim_start).count() / 1000.0;
+    sys.CloseXTC();
+    info("Simulation total time is {:03.0f}ms.", sim_time);
+    if (conf.dordf == true)
+    {
+        sys.NormalizeRdf();
+        sys.OutputRdf();
+    }
+
+    if (conf.dovel == true)
+    {
+        sys.NormalizeVel();
+        sys.OutputVel();
+    }
+    sys.ErrorAnalysis(conf.nblocks);
+    sys.NormalizeAverages();
+    sys.PrintAverages();
+} 
+
 int System::GetTime()
 {
     auto t = duration_cast<milliseconds>(high_resolution_clock::now() - prev_time_point).count();

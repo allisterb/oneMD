@@ -41,10 +41,6 @@
 
 #include "spdlog/spdlog.h"
 
-#ifdef USE_ONEAPI
-    #include "dpc_common.hpp"
-#endif
-
 using namespace std;
 using namespace spdlog;
 
@@ -125,6 +121,9 @@ class LJ : public Simulator {
     void Update (int, int, double[], double[], double[], double[], double, double);
     double Distance (int, double[], double[], double[]);
     void HostCPURun();
+#ifdef USE_ONEAPI
+    void CPURun();
+#endif
     System sys;
     configuration conf;
 };
