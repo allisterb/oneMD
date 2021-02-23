@@ -249,10 +249,13 @@ void System::WriteXTC(int step)
     box_xtc[Z][Z] = this->box[Z]*0.1;
 
     x_xtc = new rvec[this->x.size()];
-    #pragma omp for
+#pragma omp for
+#ifdef MSVC
+    for (int i = 0; i < x.size(); i++)
+#else
     for (unsigned int i = 0; i < x.size(); i++)
+#endif
     {
-
         // Shift all the points to the center of the box
         this->x[i] = pbc(this->x[i], this->box);
 
@@ -260,7 +263,6 @@ void System::WriteXTC(int step)
         x_xtc[i][X] = this->x[i][X]*0.1;
         x_xtc[i][Y] = this->x[i][Y]*0.1;
         x_xtc[i][Z] = this->x[i][Z]*0.1;
-
     }
 
     write_xtc(this->xd, this->x.size(), step, this->dt*step, box_xtc, x_xtc, 1000);

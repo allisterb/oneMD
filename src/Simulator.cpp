@@ -11,6 +11,7 @@ Simulator::Simulator(const string _name, const int _nd, const int _np, const int
   ts_delta(_ts_delta),
   device(_device)
 {}
+
 Simulator::Simulator(const string _name, configuration config, const Device _device) :
   name(_name),
   nd(3),
