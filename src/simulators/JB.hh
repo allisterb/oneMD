@@ -1,3 +1,5 @@
+/* Based on https://people.sc.fsu.edu/~jburkardt/cpp_src/md_openmp/md_openmp.cpp" by John Burkardt
+ */
 #ifndef __JB_H__
 #define __JB_H__
 

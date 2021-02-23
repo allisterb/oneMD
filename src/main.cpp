@@ -110,7 +110,7 @@ int main (int argc, char *argv[] )
         return 2;
 #else
       default:
-        error("The {} device is not enabled in this build of oneAPI.", config.device._to_string());
+        error("The {} device is not enabled in this build of oneMD. Build oneMD inside a oneAPI environment to enable this device.", config.device._to_string());
         return 2;
 #endif
     }

@@ -141,7 +141,7 @@ retrypoint:
     info("Created .pdb file at {}.", pdbfile);
 }
 
-void System::CalcForceCPU()
+void System::CalcForceHostCPU()
 {
 
     int ncut = 0;
@@ -227,7 +227,7 @@ void System::CalcForceCPU()
 }
 
 // Velocity Verlet integrator in two parts
-void System::IntegrateCPU(int a, bool tcoupl)
+void System::IntegrateHostCPU(int a, bool tcoupl)
 {
 
     if (a == 0) 
@@ -264,7 +264,7 @@ void System::IntegrateCPU(int a, bool tcoupl)
     return;
 }
 
-void System::UpdateNeighborListCPU()
+void System::UpdateNeighborListHostCPU()
 {
     this->nlist.Update(this->x, this->box);
     return;
@@ -418,6 +418,19 @@ void System::NormalizeAverages()
     return;
 }
 
+
+int System::GetTime()
+{
+    auto t = duration_cast<milliseconds>(high_resolution_clock::now() - prev_time_point).count();
+    return t;
+}
+
+void System::ResetTimer()
+{
+    info("Resetting timer.");
+    System::prev_time_point = high_resolution_clock::now();
+}
+
 LJ::LJ(configuration config, Device device) : 
     Simulator("LJ", config, device),
     conf(config),
@@ -496,20 +509,20 @@ void LJ::HostCPURun()
     info("Using OpenMP to parallelize calculating forces on each atom from neighboring atoms and for velocity Verlet integration.");
     info("Press Ctrl-C to stop simulation.");
     auto sim_start = std::chrono::high_resolution_clock::now();
-    sys.UpdateNeighborListCPU();
-    sys.CalcForceCPU();
+    sys.UpdateNeighborListHostCPU();
+    sys.CalcForceHostCPU();
     sys.PrintHeader();
     sys.Print(0);
     for (int step = 1; step < conf.nsteps; step++)
     {
         // Main part of algorithm
-        sys.IntegrateCPU(0, conf.tcoupl);
-        sys.CalcForceCPU();
-        sys.IntegrateCPU(1, conf.tcoupl);
+        sys.IntegrateHostCPU(0, conf.tcoupl);
+        sys.CalcForceHostCPU();
+        sys.IntegrateHostCPU(1, conf.tcoupl);
         // Update the neighbor list this step?
         if (step % conf.nlist == 0)
         {
-            sys.UpdateNeighborListCPU();
+            sys.UpdateNeighborListHostCPU();
         }
         // Sample the RDF this step?
         if (( conf.dordf == true) && (step % conf.rdf_freq == 0) && (step > conf.eql_steps))
@@ -561,29 +574,29 @@ void LJ::HostCPURun()
     sys.PrintAverages();
 } 
 
+#ifdef USE_ONEAPI
 void LJ::CPURun() 
 {
-    sycl::queue Q{ sycl::cpu_selector{} };
-    auto device_name = Q.get_device().get_info<sycl::info::device::name>();
+    sycl::queue q{ sycl::cpu_selector{} };
+    auto device_name = q.get_device().get_info<sycl::info::device::name>();
     info("Using CPU device: {}.", device_name);
     info("Using SYCL CPU device to parallelize calculating forces on each atom from neighboring atoms and for velocity Verlet integration.");
     info("Press Ctrl-C to abort simulation.");
-    dpc_common::TimeInterval t0;
     auto sim_start = std::chrono::high_resolution_clock::now();
-    sys.UpdateNeighborListCPU();
-    sys.CalcForceCPU();
+    sys.UpdateNeighborListHostCPU();
+    sys.CalcForceHostCPU();
     sys.PrintHeader();
     sys.Print(0);
     for (int step = 1; step < conf.nsteps; step++)
     {
         // Main part of algorithm
-        sys.IntegrateCPU(0, conf.tcoupl);
-        sys.CalcForceCPU();
-        sys.IntegrateCPU(1, conf.tcoupl);
+        sys.IntegrateHostCPU(0, conf.tcoupl);
+        sys.CalcForceHostCPU();
+        sys.IntegrateHostCPU(1, conf.tcoupl);
         // Update the neighbor list this step?
         if (step % conf.nlist == 0)
         {
-            sys.UpdateNeighborListCPU();
+            sys.UpdateNeighborListHostCPU();
         }
         // Sample the RDF this step?
         if (( conf.dordf == true) && (step % conf.rdf_freq == 0) && (step > conf.eql_steps))
@@ -634,15 +647,4 @@ void LJ::CPURun()
     sys.NormalizeAverages();
     sys.PrintAverages();
 } 
-
-int System::GetTime()
-{
-    auto t = duration_cast<milliseconds>(high_resolution_clock::now() - prev_time_point).count();
-    return t;
-}
-
-void System::ResetTimer()
-{
-    info("Resetting timer.");
-    System::prev_time_point = high_resolution_clock::now();
-}
+#endif

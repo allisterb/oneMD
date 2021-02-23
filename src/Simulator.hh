@@ -72,9 +72,11 @@ class Simulator {
     virtual void Compute (int nd, int np, double pos[], double vel[], double mass, double f[], double &pot, double &kin) = 0;
     virtual void Update (int nd, int np, double pos[], double vel[], double f[], double acc[], double mass, double dt) = 0;
     virtual void HostCPURun() = 0;
+#ifdef USE_ONEAPI
     virtual void CPURun();
     virtual void GPURun();
     virtual void FPGARun();
+#endif
     const string name;
     const int np;
     const int nd;

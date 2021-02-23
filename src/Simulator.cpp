@@ -19,7 +19,7 @@ Simulator::Simulator(const string _name, configuration config, const Device _dev
   ts_delta(config.dt),
   device(_device)
 {
-  info("config.natoms = {}. config.nsteps = {}. config.dt = {}.", config.natoms, config.nsteps, config.dt);
+  info("config.natoms = {}. config.nsteps = {}. config.dt = {}. config.device={}", config.natoms, config.nsteps, config.dt, config.device._to_string());
 }
 
 Simulator::~Simulator() {}
@@ -72,7 +72,7 @@ int Simulator::config_ini_handler(void* c, const char* section, const char* name
   #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0  
   return 1;
 }
-
+#ifdef USE_ONEAPI
 void Simulator::CPURun()
 {
   throw new NotImplementedException();
@@ -87,3 +87,4 @@ void Simulator::FPGARun()
 {
   throw new NotImplementedException();
 }
+#endif

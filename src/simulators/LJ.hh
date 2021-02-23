@@ -91,9 +91,9 @@ class System
     public:
         System(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
         void Initialize(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
-        void CalcForceCPU();
-        void UpdateNeighborListCPU();
-        void IntegrateCPU(int a, bool tcoupl);
+        void CalcForceHostCPU();
+        void UpdateNeighborListHostCPU();
+        void IntegrateHostCPU(int a, bool tcoupl);
         void CloseXTC();
         void ErrorAnalysis(int nblocks);
         void NormalizeAverages();
