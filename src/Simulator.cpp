@@ -28,7 +28,7 @@ configuration Simulator::default_config()
 { 
   return {
     .debug = false,
-    .device = Device::CPU,
+    .device = Device::HOST_CPU,
     .mindist = 1.0,
     .maxtries = 10e6,
     .dt = 0.005,
@@ -71,6 +71,11 @@ int Simulator::config_ini_handler(void* c, const char* section, const char* name
   configuration* pconfig = (configuration*) c;
   #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0  
   return 1;
+}
+
+void Simulator::CPURun()
+{
+  throw new NotImplementedException();
 }
 
 void Simulator::GPURun()

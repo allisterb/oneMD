@@ -124,7 +124,7 @@ class LJ : public Simulator {
     void Compute (int, int, double[], double[], double, double[], double&, double&);
     void Update (int, int, double[], double[], double[], double[], double, double);
     double Distance (int, double[], double[], double[]);
-    void CPURun();
+    void HostCPURun();
     System sys;
     configuration conf;
 };

@@ -32,7 +32,7 @@ int main (int argc, char *argv[] )
     ValueArg<int> npArg("n", "np","Number of particles for simulation.",false, 100,"integer");
     ValueArg<int> tsArg("t", "ts","Number of time steps for simulation.",false, 1000,"integer");
     ValueArg<double> tsdeltaArg("", "dt","Timestep delta in seconds.",false, 0.005,"integer");
-    ValueArg<string> devArg("e", "device","Name of hardware device, accelerator or library to run simulation on.", false, "CPU", "string");
+    ValueArg<string> devArg("e", "device","Name of hardware device, accelerator or library to run simulation on.", false, "HOST_CPU", "string");
     ValueArg<string> configArg("c","config","Name of configuration file for simulation,",false,"","string");
     SwitchArg debugArg("d","debug","Enable debug-level logging.", cmd, false);
     cmd.add(ndArg);
@@ -90,12 +90,12 @@ int main (int argc, char *argv[] )
   {
     switch (config.device)
     {
-      case Device::CPU:
+      case Device::HOST_CPU:
         sim->Initialize();
-        sim->CPURun();
+        sim->HostCPURun();
         return 0;
       default:
-        error("Unknown device.");
+        error("Unsupported device.");
         return 2;
     }
   }

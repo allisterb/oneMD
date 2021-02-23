@@ -33,7 +33,7 @@ class JB : public Simulator {
     void Compute (int, int, double[], double[], double, double[], double&, double&);
     void Update (int, int, double[], double[], double[], double[], double, double);
     double Distance (int, double[], double[], double[]);
-    void CPURun();
+    void HostCPURun();
 };
 
 #endif // __JB_H__

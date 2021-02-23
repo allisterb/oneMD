@@ -237,7 +237,7 @@ bool JB::Initialize()
   return true;
 }
 
-void JB::CPURun() 
+void JB::HostCPURun() 
 {
   //
   //  This is the main time stepping loop:

@@ -491,7 +491,7 @@ void LJ::Update (int nd, int np, double pos[], double vel[], double f[], double 
 void LJ::Compute (int nd, int np, double pos[], double vel[], double mass, double f[], double &pot, double &kin)
 {}
 
-void LJ::CPURun() 
+void LJ::HostCPURun() 
 {
     info("Using OpenMP to parallelize calculating forces on each atom from neighboring atoms and for velocity Verlet integration.");
     info("Press Ctrl-C to stop simulation.");

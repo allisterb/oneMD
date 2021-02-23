@@ -11,7 +11,7 @@ using namespace std;
 using namespace std::chrono; 
 using namespace spdlog;
 
-BETTER_ENUM(Device, int, CPU, FPGA);
+BETTER_ENUM(Device, int, HOST_CPU, CPU, GPU, FPGA);
 
 typedef struct
 {
@@ -67,7 +67,8 @@ class Simulator {
     virtual bool Initialize() = 0;
     virtual void Compute (int nd, int np, double pos[], double vel[], double mass, double f[], double &pot, double &kin) = 0;
     virtual void Update (int nd, int np, double pos[], double vel[], double f[], double acc[], double mass, double dt) = 0;
-    virtual void CPURun() = 0;
+    virtual void HostCPURun() = 0;
+    virtual void CPURun();
     virtual void GPURun();
     virtual void FPGARun();
     const string name;
