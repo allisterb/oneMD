@@ -39,7 +39,7 @@ void Thermostat::DoCollisions(vector <Vector> &v)
     normal_distribution<double> ndis(0.0, this->sigma);
 
     #pragma omp parallel for schedule(guided, CHUNKSIZE)
-    for (unsigned int i = 0; i < v.size(); i++)
+    for (int i = 0; i < v.size(); i++)
     {
 
         if (dis(gen) < this->coll_freq_dt)

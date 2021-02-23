@@ -53,7 +53,7 @@ void Velocity::sample(vector <Vector> &v)
         }
 
         #pragma omp for schedule(guided, CHUNKSIZE)
-        for (unsigned int i = 0; i < v.size(); i++)
+        for (int i = 0; i < v.size(); i++)
         {
             iv = (v[i][X] + this->shift) / this->binwidth;
             hist_thread[iv][X] += 1.0;

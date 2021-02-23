@@ -9,7 +9,7 @@
 
 #include "JB.hh"
 
-JB::JB(const int _nd, const int _np, const int _ts, const float _ts_delta, const Device _device) :
+JB::JB(const int _nd, const int _np, const int _ts, double _ts_delta, const Device _device) :
   Simulator("JB", _nd, _np, _ts, _ts_delta, _device),
   step_num(_ts),
   dt(_ts_delta)

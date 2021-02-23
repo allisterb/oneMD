@@ -30,7 +30,7 @@ class JB : public Simulator {
     void timestamp ();
 
   public:
-    JB(const int, const int, const int, const float, const Device);
+    JB(const int, const int, const int, const double, const Device);
     bool Initialize();
     void Compute (int, int, double[], double[], double, double[], double&, double&);
     void Update (int, int, double[], double[], double[], double[], double, double);

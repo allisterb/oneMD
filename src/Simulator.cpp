@@ -3,7 +3,7 @@
 
 NotImplementedException::NotImplementedException() : std::logic_error("Not yet implemented") { };
 
-Simulator::Simulator(const string _name, const int _nd, const int _np, const int _ts, const float _ts_delta, const Device _device) :
+Simulator::Simulator(const string _name, const int _nd, const int _np, const int _ts, const double _ts_delta, const Device _device) :
   name(_name),
   nd(_nd),
   np(_np),

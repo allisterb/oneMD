@@ -39,11 +39,9 @@ void Rdf::sample(vector <Vector> &x, CubicBox &box)
     this->n++;
     #pragma omp parallel
     {
-
         vector <double> g_thread(nbins, 0.0);
-
         #pragma omp for schedule(guided, CHUNKSIZE)
-        for (unsigned int i = 0; i < x.size()-1; i++)
+        for (int i = 0; i < x.size()-1; i++)
         {
             for (unsigned int j = i+1; j < x.size(); j++)
             {

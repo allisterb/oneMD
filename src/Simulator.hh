@@ -73,7 +73,7 @@ class Simulator {
   private:
   protected:
   public:
-    Simulator(const string _name, const int _nd, const int _np, const int _ts, const float _ts_delta, const Device _device);
+    Simulator(const string _name, const int _nd, const int _np, const int _ts, const double _ts_delta, const Device _device);
     Simulator(const string _name, configuration config, const Device _device);
     virtual bool Initialize() = 0;
     virtual void Compute (int nd, int np, double pos[], double vel[], double mass, double f[], double &pot, double &kin) = 0;
@@ -88,7 +88,7 @@ class Simulator {
     const int np;
     const int nd;
     const int ts;
-    const float ts_delta;
+    const double ts_delta;
     const Device device;
     virtual ~Simulator();
     static configuration default_config();

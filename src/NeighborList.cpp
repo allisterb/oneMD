@@ -41,7 +41,7 @@ void NeighborList::UpdateHostCPU(vector <Vector> &x, CubicBox &box)
 {
 #ifndef USE_ONEAPI
     #pragma omp parallel for schedule(guided, CHUNKSIZE)
-    for (unsigned int i = 0; i < this->list.size(); i++)
+    for (int i = 0; i < this->list.size(); i++)
     {
         this->list.at(i).resize(0);
     }
@@ -52,7 +52,7 @@ void NeighborList::UpdateHostCPU(vector <Vector> &x, CubicBox &box)
     // Atoms are not double counted in the neighbor list. That is, when atom j
     // is on atom i's list, the opposite is not true.
     #pragma omp parallel for schedule(guided, CHUNKSIZE)
-    for (unsigned int i = 0; i < x.size()-1; i++)
+    for (int i = 0; i < x.size()-1; i++)
     {
         for (unsigned int j = i+1; j < x.size(); j++)
         {
