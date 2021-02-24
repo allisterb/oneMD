@@ -39,7 +39,6 @@ conf(c)
         default:
             throw new NotImplementedException();
     }
-
 #endif
 }
     
@@ -490,14 +489,28 @@ LJ::LJ(configuration config, Device device) :
     sys(config, config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile)
 {
 #ifdef USE_ONEAPI
-    q = { sycl::cpu_selector{} };
+    switch(config.device)
+    {
+        case Device::HOST_CPU:
+            q = sycl::host_selector{};
+            break;
+        case Device::CPU:
+            q = sycl::cpu_selector{};
+            break;
+        case Device::GPU:
+            q = sycl::gpu_selector{};
+            break;
+        default:
+            throw new NotImplementedException();
+    }
 #endif
 }
 
 bool LJ::Initialize() 
 {
-    info("Lennard-Jones simulation of {} atoms in a cubic box of dimension {:01.1f} for {} steps.\nOriginal code by James W. Barnett https://github.com/wesbarnett/lennardjones", 
-        conf.natoms, sys.box[0], conf.nsteps);
+    info("Lennard-Jones simulation of {} atoms in a cubic box for {} steps.", 
+        conf.natoms, conf.nsteps);
+    info("Original C++ code by James W. Barnett https://github.com/wesbarnett/lennardjones");
     if (!conf.debug)
     {
         info("Use --debug to print this simulator's complete configuration.");

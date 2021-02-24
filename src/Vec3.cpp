@@ -1,4 +1,4 @@
-/*
+/* Based on https://github.com/wesbarnett/lennardjones" by James W. Barnett
  * libgmxcpp
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
@@ -18,14 +18,6 @@
  * The full license is located in a text file titled "LICENSE" in the root
  * directory of the source.
  *
- */
-
-/**
- * @file
- * @author James W. Barnett jbarnet4@tulane.edu
- * @date December 5, 2014
- * @brief Header for Vec3 class
- * @see Vec3.h
  */
 
 #include "Vec3.hh"
