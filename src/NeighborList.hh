@@ -1,4 +1,4 @@
-/*
+/* Based on https://github.com/wesbarnett/lennardjones" by James W. Barnett
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -18,7 +18,6 @@
  * directory of the source.
  *
  */
-
 
 #ifndef NEIGHBORLIST_H
 #define NEIGHBORLIST_H
