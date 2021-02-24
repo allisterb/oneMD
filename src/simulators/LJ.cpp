@@ -25,7 +25,21 @@ System::System(configuration c, int natoms, int nsteps, double rho, double rcut,
 conf(c)
 {
 #ifdef USE_ONEAPI
-    q = { sycl::cpu_selector{} };
+    switch(c.device)
+    {
+        case Device::HOST_CPU:
+            q = sycl::host_selector{};
+            break;
+        case Device::CPU:
+            q = sycl::cpu_selector{};
+            break;
+        case Device::GPU:
+            q = sycl::gpu_selector{};
+            break;
+        default:
+            throw new NotImplementedException();
+    }
+
 #endif
 }
     
@@ -85,13 +99,10 @@ void System::Initialize(configuration c, int natoms, int nsteps, double rho, dou
     int i = 0;
     while (i < natoms)
     {
-
 retrypoint:
-
         this->x[i][X] = disx(gen);
         this->x[i][Y] = disy(gen);
         this->x[i][Z] = disz(gen);
-
         for (int j = 0; j < i; j++)
         {
 
@@ -104,7 +115,6 @@ retrypoint:
                 }
                 goto retrypoint;
             }
-
         }
 
         // Point accepted if we're here
@@ -125,7 +135,6 @@ retrypoint:
     sumv /= this->natoms;
     sumv2 /= this->natoms;
     double fs = sqrt(3.0*temp/sumv2);
-
     sumv2 = 0.0;
     for (int i = 0; i < this->natoms; i++)
     {
@@ -430,7 +439,13 @@ void System::UpdateNeighborListCPU()
 
 void System::CalcForceCPU()
 {
-    throw new NotImplementedException();
+    std::fill_n(dpl::execution::par_unseq, System::f.begin(), System::f.size(), 0.0);
+    int ncut = 0;
+    double pe = 0.0;
+    double *f_array = sycl::malloc_device<double>(natoms, q);
+    System::q.submit([=](sycl::handler &h) {
+        h.fill((void *) f_array, 0.0, natoms);
+    });
 }
 
 void System::IntegrateCPU(int a, bool tcoupl)

@@ -22,7 +22,7 @@
 #include "Simulator.hh"
 #include "xdrfile.h"
 
-NotImplementedException::NotImplementedException() : std::logic_error("Not yet implemented") { };
+NotImplementedException::NotImplementedException() : std::logic_error("Not yet implemented.") { };
 
 Simulator::Simulator(const string _name, const int _nd, const int _np, const int _ts, const double _ts_delta, const Device _device) :
   name(_name),
@@ -64,8 +64,8 @@ configuration Simulator::default_config()
     .rcut = 2.5,
     .rlist = 3.5,
     .nlist = 10,
-    .pdbfile ="init.pdb",
-    .xtcfile = "traj.xtc",
+    .pdbfile ="onemd.pdb",
+    .xtcfile = "onemd.xtc",
     .nxtc = 1000,
     .nlog = 1000,
     .tcouplstr = "no",
@@ -75,14 +75,14 @@ configuration Simulator::default_config()
     .dordfstr = "no",
     .dordf = false,
     .rdf_nbins = 100,
-    .rdf_outfile = "rdf.dat",
+    .rdf_outfile = "onemd_rdf.dat",
     .rdf_freq = 1000,
     .dovelstr = "no",
     .dovel = false,
     .v_max = 10.0,
     .v_min = -10.0,
     .v_nbins = 100,
-    .v_outfile = "vel_dist.dat",
+    .v_outfile = "onemd_vel_dist.dat",
     .v_freq = 1000
   };
 }

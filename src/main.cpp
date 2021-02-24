@@ -19,10 +19,10 @@ using namespace std;
 using namespace spdlog;
 using namespace TCLAP;
 
-int main (int argc, char *argv[] )
+int main (int argc, char *argv[])
 { 
   Figlet::small.print("oneMD");
-	unique_ptr<Simulator> sim(nullptr);
+  unique_ptr<Simulator> sim(nullptr);
   auto config = Simulator::default_config();
   try 
   {  
@@ -110,11 +110,12 @@ int main (int argc, char *argv[] )
         sim->CPURun();
         return 0;
       default:
-        error("The {} device is not implemented.", config.device._to_string());
+        error("The {} device is not yet implemented.", config.device._to_string());
         return 2;
 #else
       default:
-        error("The {} device is not enabled in this build of oneMD. Build oneMD inside a oneAPI environment to enable this device.", config.device._to_string());
+        error("The {} device is not enabled in this build of oneMD. Only host_cpu acceleration via OpenMP is available. \n"
+        "Build oneMD using the DPC++ compiler inside a oneAPI environment to enable this device.", config.device._to_string());
         return 2;
 #endif
     }

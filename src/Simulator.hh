@@ -37,6 +37,7 @@
 #ifdef USE_ONEAPI
 #include "dpc_common.hpp"
 #include <CL/sycl.hpp>
+using namespace oneapi;
 #endif
 
 using namespace std;

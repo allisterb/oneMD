@@ -24,17 +24,23 @@
 #ifdef USE_ONEAPI
 #include "dpc_common.hpp"
 #include <CL/sycl.hpp>
+using namespace oneapi;
 #endif
 
-NeighborList::NeighborList()
-{
-}
+NeighborList::NeighborList():
+list(),
+rlist(0.0),
+rlist2(0.0),
+listptr(nullptr)
+{}
 
-NeighborList::NeighborList(int natoms, double rlist)
+NeighborList::NeighborList(int natoms, double _rlist) :
+list(natoms),
+rlist(_rlist),
+rlist2(_rlist * _rlist),
+listptr(nullptr)
 {
-    list.resize(natoms);
-    this->rlist2 = rlist*rlist;
-    return;
+    listptr = &list[0];
 }
 
 void NeighborList::UpdateHostCPU(vector <Vector> &x, CubicBox &box)
@@ -46,7 +52,7 @@ void NeighborList::UpdateHostCPU(vector <Vector> &x, CubicBox &box)
         this->list.at(i).resize(0);
     }
 #else
-    std::for_each(oneapi::dpl::execution::par, this->list.begin(), this->list.end(), 
+    std::for_each(dpl::execution::par_unseq, this->list.begin(), this->list.end(), 
         [](vector <int> &v){v.resize(0);});
 #endif
     // Atoms are not double counted in the neighbor list. That is, when atom j
@@ -60,10 +66,8 @@ void NeighborList::UpdateHostCPU(vector <Vector> &x, CubicBox &box)
             {
                 this->list.at(i).push_back(j);
             }
-
         }
     }
-
     return;
 }
 

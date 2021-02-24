@@ -33,12 +33,12 @@
 #include "Vector.hh"
 #include "CubicBox.hh"
 
-
 class NeighborList {
-    private:
-        vector <vector <int> > list;
-        double rlist2;
     public:
+        vector <vector<int>> list;
+        double rlist;
+        double rlist2;
+        void* listptr;
         NeighborList();
         NeighborList(int natoms, double rlist);
         int GetNeighbor(int i, int j);
