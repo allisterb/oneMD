@@ -29,7 +29,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Vector.hh"
+#include "Vec3.hh"
 using namespace std;
 
 class PdbFile {
@@ -38,7 +38,7 @@ class PdbFile {
         PdbFile();
         void open(string filename);
         void write_header(string compnd, string author, string remark);
-        void write_line(int atom_no, string atom_name, string res, int res_no, Vector &x, double occupancy, double beta);
+        void write_line(int atom_no, string atom_name, string res, int res_no, Vec3 &x, double occupancy, double beta);
         void close();
     private:
         ofstream oFS;

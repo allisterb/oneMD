@@ -14,27 +14,27 @@ const int Y = 1;
 /** Z coordinate */
 const int Z = 2;
 
-class Vector {
+class Vec3 {
 
 private:
     array <double,3> r;
 public:
-    Vector();
-    Vector(double x, double y, double z);
+    Vec3();
+    Vec3(double x, double y, double z);
     void set(double x, double y, double z);
-    Vector operator-(Vector rhs);
-    void operator -= (Vector rhs);
-    Vector operator + (Vector rhs);
-    void operator += (Vector rhs);
-    Vector operator / (double rhs);
+    Vec3 operator-(Vec3 rhs);
+    void operator -= (Vec3 rhs);
+    Vec3 operator + (Vec3 rhs);
+    void operator += (Vec3 rhs);
+    Vec3 operator / (double rhs);
     void operator /= (double rhs);
     void operator *= (double rhs);
     void operator = (double rhs);
-    friend Vector operator * (Vector lhs, double rhs);
-    friend Vector operator*(double lhs, Vector rhs);
+    friend Vec3 operator * (Vec3 lhs, double rhs);
+    friend Vec3 operator*(double lhs, Vec3 rhs);
     double& operator[](int i);
     const double& operator[](int i) const;
 };
 
-using Vec3 = Vector;
+using Vec3 = Vec3;
 #endif

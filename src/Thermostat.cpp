@@ -31,7 +31,7 @@ Thermostat::Thermostat(double reft, double coll_freq, double dt)
     return;
 }
 
-void Thermostat::DoCollisions(vector <Vector> &v)
+void Thermostat::DoCollisions(vector <Vec3> &v)
 {
     random_device rd;
     mt19937 gen(rd());

@@ -23,7 +23,7 @@
 #ifndef THERMOSTAT_H
 #define THERMOSTAT_H
 
-#include "Vector.hh"
+#include "Vec3.hh"
 #include <random>
 #include <math.h>
 

@@ -75,7 +75,7 @@ set (SIMS_SRC src/simulators/JB.cpp src/simulators/LJ.cpp)
 set (SRC 
     ext/inih/cpp/INIReader.cpp
     src/Simulator.cpp 
-    src/Vector.cpp 
+    src/Vec3.cpp 
     src/CubicBox.cpp 
     src/NeighborList.cpp 
     src/PdbFile.cpp

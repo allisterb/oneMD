@@ -40,13 +40,13 @@ Velocity::Velocity(int nbins, double max, double min, string outfile)
     this->outfile = outfile;
 }
 
-void Velocity::sample(vector <Vector> &v)
+void Velocity::sample(vector <Vec3> &v)
 {
     this->n++;
     #pragma omp parallel
     {
         double iv;
-        vector <Vector> hist_thread(nbins);
+        vector <Vec3> hist_thread(nbins);
         for (int i = 0; i < nbins; i++)
         {
             hist_thread[i] = 0.0;

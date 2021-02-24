@@ -23,7 +23,7 @@
 #ifndef RDF_H
 #define RDF_H
 
-#include "Vector.hh"
+#include "Vec3.hh"
 #include "CubicBox.hh"
 
 #include <fstream>
@@ -45,7 +45,7 @@ class Rdf {
     public:
         Rdf();
         Rdf(int nbins, CubicBox &box, string outfile);
-        void sample(vector <Vector> &x, CubicBox &box);
+        void sample(vector <Vec3> &x, CubicBox &box);
         void normalize(int natoms, CubicBox &box);
         void output();
 };

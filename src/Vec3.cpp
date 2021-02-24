@@ -24,32 +24,32 @@
  * @file
  * @author James W. Barnett jbarnet4@tulane.edu
  * @date December 5, 2014
- * @brief Header for Vector class
- * @see Vector.h
+ * @brief Header for Vec3 class
+ * @see Vec3.h
  */
 
-#include "Vector.hh"
+#include "Vec3.hh"
 
-Vector::Vector(){ }
+Vec3::Vec3(){ }
 
-Vector::Vector(double x, double y, double z)
+Vec3::Vec3(double x, double y, double z)
 {
     this->r[X] = x;
     this->r[Y] = y;
     this->r[Z] = z;
 }
 
-double& Vector::operator[](int i)
+double& Vec3::operator[](int i)
 {
     return r[i];
 }
 
-const double& Vector::operator[](int i) const
+const double& Vec3::operator[](int i) const
 {
     return r[i];
 }
 
-void Vector::set(double x, double y, double z)
+void Vec3::set(double x, double y, double z)
 {
     this->r[X] = x;
     this->r[Y] = y;
@@ -57,12 +57,12 @@ void Vector::set(double x, double y, double z)
     return;
 }
 
-Vector Vector::operator-(Vector rhs)
+Vec3 Vec3::operator-(Vec3 rhs)
 {
-    return (Vector (r[X] - rhs[X], r[Y] - rhs[Y], r[Z] - rhs[Z]));
+    return (Vec3 (r[X] - rhs[X], r[Y] - rhs[Y], r[Z] - rhs[Z]));
 }
 
-void Vector::operator-=(Vector rhs)
+void Vec3::operator-=(Vec3 rhs)
 {
     r[X] -= rhs[X];
     r[Y] -= rhs[Y];
@@ -70,12 +70,12 @@ void Vector::operator-=(Vector rhs)
     return;
 }
 
-Vector Vector::operator+(Vector rhs)
+Vec3 Vec3::operator+(Vec3 rhs)
 {
-    return (Vector (r[X] + rhs[X], r[Y] + rhs[Y], r[Z] + rhs[Z]));
+    return (Vec3 (r[X] + rhs[X], r[Y] + rhs[Y], r[Z] + rhs[Z]));
 }
 
-void Vector::operator+=(Vector rhs)
+void Vec3::operator+=(Vec3 rhs)
 {
     r[X] += rhs[X];
     r[Y] += rhs[Y];
@@ -83,12 +83,12 @@ void Vector::operator+=(Vector rhs)
     return;
 }
 
-Vector Vector::operator/(double rhs)
+Vec3 Vec3::operator/(double rhs)
 {
-    return (Vector (r[X] / rhs, r[Y] / rhs, r[Z] / rhs));
+    return (Vec3 (r[X] / rhs, r[Y] / rhs, r[Z] / rhs));
 }
 
-void Vector::operator/=(double rhs)
+void Vec3::operator/=(double rhs)
 {
     r[X] /= rhs;
     r[Y] /= rhs;
@@ -96,17 +96,17 @@ void Vector::operator/=(double rhs)
     return;
 }
 
-Vector operator*(Vector lhs, double rhs)
+Vec3 operator*(Vec3 lhs, double rhs)
 {
-    return (Vector (lhs[X] * rhs, lhs[Y] * rhs, lhs[Z] * rhs));
+    return (Vec3 (lhs[X] * rhs, lhs[Y] * rhs, lhs[Z] * rhs));
 }
 
-Vector operator*(double lhs, Vector rhs)
+Vec3 operator*(double lhs, Vec3 rhs)
 {
-    return (Vector (rhs[X] * lhs, rhs[Y] * lhs, rhs[Z] * lhs));
+    return (Vec3 (rhs[X] * lhs, rhs[Y] * lhs, rhs[Z] * lhs));
 }
 
-void Vector::operator*=(double rhs)
+void Vec3::operator*=(double rhs)
 {
     r[X] *= rhs;
     r[Y] *= rhs;
@@ -114,7 +114,7 @@ void Vector::operator*=(double rhs)
     return;
 }
 
-void Vector::operator=(double rhs)
+void Vec3::operator=(double rhs)
 {
     r[X] = rhs;
     r[Y] = rhs;

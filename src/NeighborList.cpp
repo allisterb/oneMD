@@ -42,7 +42,7 @@ listptr(nullptr)
     listptr = &list[0];
 }
 
-void NeighborList::UpdateHostCPU(vector <Vector> &x, CubicBox &box)
+void NeighborList::UpdateHostCPU(vector <Vec3> &x, CubicBox &box)
 {
 #ifndef USE_ONEAPI
     #pragma omp parallel for schedule(guided, CHUNKSIZE)

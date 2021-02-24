@@ -29,7 +29,7 @@
 #include <oneapi/dpl/iterator>
 #endif
 
-#include "Vector.hh"
+#include "Vec3.hh"
 #include "CubicBox.hh"
 
 class NeighborList {
@@ -43,7 +43,7 @@ class NeighborList {
         int GetNeighbor(int i, int j);
         int GetSize(int i);
         void Init(int natoms, double rlist);
-        void UpdateHostCPU(vector <Vector> &x, CubicBox &box);
+        void UpdateHostCPU(vector <Vec3> &x, CubicBox &box);
 };
 
 #endif

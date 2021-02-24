@@ -93,7 +93,7 @@ void System::Initialize(configuration c, int natoms, int nsteps, double rho, dou
     uniform_real_distribution<double> disy(-box[Y]/2.0,box[Y]/2.0);
     uniform_real_distribution<double> disz(-box[Z]/2.0,box[Z]/2.0);
     normal_distribution<double> dis_vel(0.0, sqrt(temp));
-    Vector sumv(0.0, 0.0, 0.0);
+    Vec3 sumv(0.0, 0.0, 0.0);
     double sumv2 = 0.0;
     const double mindist2 = mindist*mindist;
     int i = 0;
@@ -332,7 +332,7 @@ void System::CalcForceHostCPU()
     }
     #pragma omp parallel
     {
-        vector <Vector> f_thread(natoms);
+        vector <Vec3> f_thread(natoms);
         for (int i = 0; i < this->natoms; i++)
         {
             f_thread[i] = 0.0;
@@ -348,13 +348,13 @@ void System::CalcForceHostCPU()
             for (int neighb = 0; neighb < nlist.GetSize(i); neighb++)
             {
                 int j = nlist.GetNeighbor(i, neighb);
-                Vector dr = pbc(x[i] - x[j], box);
+                Vec3 dr = pbc(x[i] - x[j], box);
                 double r2 = dot(dr,dr);
                 if (r2 <= this->rcut2)
                 {
                     double r2i = 1.0/r2;
                     double r6i = pow(r2i,3);
-                    Vector fr = 48.0 * r2i * r6i * (r6i - 0.5) * dr;   
+                    Vec3 fr = 48.0 * r2i * r6i * (r6i - 0.5) * dr;   
                     // We have to count the force both on atom i from j and on j
                     // from i, since we didn't double count on the neighbor
                     // lists

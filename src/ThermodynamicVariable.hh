@@ -23,7 +23,7 @@
 #ifndef THERMODYNAMICVARIABLE_H
 #define THERMODYNAMICVARIABLE_H
 
-#include "Vector.hh"
+#include "Vec3.hh"
 #include <math.h>
 #include <vector>
 using namespace std;

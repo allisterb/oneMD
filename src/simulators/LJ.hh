@@ -28,7 +28,7 @@
 #include <string>
 #include <vector>
 
-#include "../Vector.hh"
+#include "../Vec3.hh"
 #include "../NeighborList.hh"
 #include "../PdbFile.hh"
 #include "../Rdf.hh"
@@ -81,9 +81,9 @@ class System
         ThermodynamicVariable Temperature;
         ThermodynamicVariable TotalEnergy;
         Thermostat tstat;
-        vector <Vector> f; // forces
-        vector <Vector> v; // velocities
-        vector <Vector> x; // positions
+        vector <Vec3> f; // forces
+        vector <Vec3> v; // velocities
+        vector <Vec3> x; // positions
         Velocity vel;
         XDRFILE *xd;
         std::chrono::time_point<std::chrono::high_resolution_clock> prev_time_point;

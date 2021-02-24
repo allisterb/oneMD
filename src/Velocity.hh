@@ -23,7 +23,7 @@
 #ifndef VELOCITY_H
 #define VELOCITY_H
 
-#include "Vector.hh"
+#include "Vec3.hh"
 
 #include <fstream>
 #include <iomanip>
@@ -43,11 +43,11 @@ class Velocity {
         int freq;
         int nbins;
         string outfile;
-        vector <Vector> hist;
+        vector <Vec3> hist;
     public:
         Velocity();
         Velocity(int nbins, double max, double min, string outfile);
-        void sample(vector <Vector> &v);
+        void sample(vector <Vec3> &v);
         void normalize(int natoms);
         void output();
 };

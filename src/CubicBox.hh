@@ -23,7 +23,7 @@
 #ifndef CubicBox_H
 #define CubicBox_H
 
-#include "Vector.hh"
+#include "Vec3.hh"
 #include "xdrfile.h"
 #include <vector>
 using namespace std;
@@ -45,11 +45,11 @@ public:
 
 };
 
-double distance(Vector a, Vector b, CubicBox box);
-double distance2(Vector a, Vector b, CubicBox box);
-double dot(Vector a, Vector b);
-double magnitude(Vector x);
-Vector pbc(Vector a, CubicBox box);
+double distance(Vec3 a, Vec3 b, CubicBox box);
+double distance2(Vec3 a, Vec3 b, CubicBox box);
+double dot(Vec3 a, Vec3 b);
+double magnitude(Vec3 x);
+Vec3 pbc(Vec3 a, CubicBox box);
 double volume(CubicBox box);
 
 #endif

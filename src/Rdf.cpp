@@ -34,7 +34,7 @@ Rdf::Rdf(int nbins, CubicBox &box, string outfile)
     this->outfile = outfile;
 }
 
-void Rdf::sample(vector <Vector> &x, CubicBox &box)
+void Rdf::sample(vector <Vec3> &x, CubicBox &box)
 {
     this->n++;
     #pragma omp parallel

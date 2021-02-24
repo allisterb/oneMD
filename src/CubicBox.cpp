@@ -55,7 +55,7 @@ const float& CubicBox::operator[](int i) const
     return box[i];
 }
 
-Vector pbc(Vector a, CubicBox box)
+Vec3 pbc(Vec3 a, CubicBox box)
 {
 
     a[Z] -= box[Z] * nearbyint(a[Z] / box[Z]);
@@ -64,24 +64,24 @@ Vector pbc(Vector a, CubicBox box)
     return a;
 }
 
-double distance(Vector a, Vector b, CubicBox box)
+double distance(Vec3 a, Vec3 b, CubicBox box)
 {
     return sqrt(distance2(a, b, box));
 }
 
-double distance2(Vector a, Vector b, CubicBox box)
+double distance2(Vec3 a, Vec3 b, CubicBox box)
 {
-    Vector c = a - b;
+    Vec3 c = a - b;
     c = pbc(c, box);
     return dot(c, c);
 }
 
-double dot(Vector a, Vector b)
+double dot(Vec3 a, Vec3 b)
 {
     return a[X] * b[X] + a[Y] * b[Y] + a[Z] * b[Z];
 }
 
-double magnitude(Vector x)
+double magnitude(Vec3 x)
 {
     return sqrt(dot(x, x));
 }

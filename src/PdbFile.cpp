@@ -51,7 +51,7 @@ void PdbFile::write_header(string compnd, string author, string remark)
     return;
 }
 
-void PdbFile::write_line(int atom_no, string atom_name, string res, int res_no, Vector &x, double occupancy, double beta)
+void PdbFile::write_line(int atom_no, string atom_name, string res, int res_no, Vec3 &x, double occupancy, double beta)
 {
     oFS << fixed;
     oFS << "ATOM";
