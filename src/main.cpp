@@ -11,7 +11,7 @@
 #include "tclap/UnlabeledValueArg.h"
 #include "Enum.h"
 
-#include "Util.hh"
+#include "Util.hpp"
 #include "simulators/JB.hh"
 #include "simulators/LJ.hh"
 

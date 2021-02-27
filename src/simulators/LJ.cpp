@@ -329,6 +329,9 @@ void System::CalcForceHostCPU()
     {
         this->f[i] = 0.0;
     }
+    //auto r = sycl::range<1>(natoms);
+    //auto r = sycl::range(size_t dim0, size_t dim1, size_t dim2);
+    //auto v = sycl::buffer<vector<int>, 1> myc(r );
     #pragma omp parallel
     {
         vector <Vec3> f_thread(natoms);
