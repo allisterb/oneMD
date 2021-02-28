@@ -33,7 +33,7 @@ Simulator::Simulator(const string _name, const int _nd, const int _np, const int
   device(_device)
 {}
 
-Simulator::Simulator(const string _name, configuration config, const Device _device) :
+Simulator::Simulator(const string _name, simulator_config config, const Device _device) :
   name(_name),
   nd(3),
   np(config.natoms),
@@ -46,7 +46,7 @@ Simulator::Simulator(const string _name, configuration config, const Device _dev
 
 Simulator::~Simulator() {}
 
-configuration Simulator::default_config()
+simulator_config Simulator::default_config()
 { 
   return {
     .debug = false,
@@ -68,16 +68,13 @@ configuration Simulator::default_config()
     .xtcfile = "onemd.xtc",
     .nxtc = 1000,
     .nlog = 1000,
-    .tcouplstr = "no",
     .tcoupl = false,
     .coll_freq = 0.001,
     .reft = 1.0,
-    .dordfstr = "no",
     .dordf = false,
     .rdf_nbins = 100,
     .rdf_outfile = "onemd_rdf.dat",
     .rdf_freq = 1000,
-    .dovelstr = "yes",
     .dovel = true,
     .v_max = 10.0,
     .v_min = -10.0,
@@ -90,7 +87,7 @@ configuration Simulator::default_config()
 int Simulator::config_ini_handler(void* c, const char* section, const char* name,
                    const char* value)
 {
-  configuration* pconfig = (configuration*) c;
+  simulator_config* pconfig = (simulator_config*) c;
   #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0  
   return 1;
 }

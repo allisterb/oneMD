@@ -21,7 +21,7 @@
 
 #include "LJ.hh"
 
-System::System(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile) :
+System::System(simulator_config c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile) :
 conf(c)
 {
 #ifdef USE_ONEAPI
@@ -42,7 +42,7 @@ conf(c)
 #endif
 }
     
-void System::Initialize(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile)
+void System::Initialize(simulator_config c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile)
 {
     cout << setprecision(6) << fixed << right;
     this->prev_time_point = high_resolution_clock::now();
@@ -486,7 +486,7 @@ void System::IntegrateFPGA(int a, bool tcoupl)
 }
 #endif
 
-LJ::LJ(configuration config, Device device) : 
+LJ::LJ(simulator_config config, Device device) : 
     Simulator("LJ", config, device),
     conf(config),
     sys(config, config.natoms, config.nsteps, config.rho, config.rcut, config.rlist, config.temp, config.dt, config.mindist, config.maxtries, config.pdbfile, config.reft, config.coll_freq, config.xtcfile, config.rdf_nbins, config.rdf_outfile, config.v_nbins, config.v_max, config.v_min, config.v_outfile)
@@ -548,7 +548,7 @@ bool LJ::Initialize()
         cout << endl;
         cout << setw(30) << left << "[ temperature ]" << endl;
         cout << setw(30) << left << "reft = " << setw(30) << left << conf.reft << endl;
-        cout << setw(30) << left << "coupl = " << setw(30) << left << conf.tcouplstr << endl;
+        cout << setw(30) << left << "coupl = " << setw(30) << left << conf.tcoupl << endl;
         cout << setw(30) << left << "coll_freq = " << setw(30) << left << conf.coll_freq << endl;
         cout << endl;
         cout << setw(30) << left << "[ rdf ]" << endl;
@@ -558,7 +558,7 @@ bool LJ::Initialize()
         cout << setw(30) << left << "freq = " << setw(30) << left << conf.rdf_freq << endl;
         cout << endl;
         cout << setw(30) << left << "[ velocity ]" << endl;
-        cout << setw(30) << left << "sample = " << setw(30) << left << conf.dovelstr << endl;
+        cout << setw(30) << left << "sample = " << setw(30) << left << conf.dovel << endl;
         cout << setw(30) << left << "min = " << setw(30) << left << conf.v_min << endl;
         cout << setw(30) << left << "max = " << setw(30) << left << conf.v_max << endl;
         cout << setw(30) << left << "nbins = " << setw(30) << left << conf.v_nbins << endl;

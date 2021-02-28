@@ -50,7 +50,7 @@ const double oneSixth = 1.0/6.0;
 class System 
 {
     private:
-        configuration conf;
+        simulator_config conf;
         double dt;              // time step
         double ecut;            // potential energy at cutoff
         double entot;           // instantaneous total energy (ke + pe)
@@ -91,8 +91,8 @@ class System
         sycl::queue q;
         #endif
     public:
-        System(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
-        void Initialize(configuration c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
+        System(simulator_config c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
+        void Initialize(simulator_config c, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
         void CalcForceHostCPU();
         void UpdateNeighborListHostCPU();
         void IntegrateHostCPU(int a, bool tcoupl);
@@ -132,7 +132,7 @@ class LJ : public Simulator {
     sycl::queue q;
 #endif
   public:
-    LJ(configuration c, const Device);
+    LJ(simulator_config c, const Device);
     bool Initialize();
     void Compute (int, int, double[], double[], double, double[], double&, double&);
     void Update (int, int, double[], double[], double[], double[], double, double);
@@ -142,6 +142,6 @@ class LJ : public Simulator {
     void CPURun();
 #endif
     System sys;
-    configuration conf;
+    simulator_config conf;
 };
 #endif
