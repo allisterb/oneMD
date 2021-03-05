@@ -1,6 +1,4 @@
-
-
-/*
+/* Based on https://github.com/wesbarnett/lennardjones" by James W. Barnett
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,15 +19,16 @@
  *
  */
 
-#ifndef PDBFILE_H
-#define PDBFILE_H
+#pragma once
 
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
+
 #include "Vec3.hh"
+
 using namespace std;
 
 class PdbFile {
@@ -43,5 +42,3 @@ class PdbFile {
     private:
         ofstream oFS;
 };
-
-#endif

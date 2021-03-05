@@ -1,5 +1,4 @@
-#ifndef __SIMULATOR_CONFIG_H__
-#define __SIMULATOR_CONFIG_H__
+#pragma once
 
 #include <string>
 #include "Device.hh"
@@ -40,5 +39,3 @@ typedef struct
     std::string v_outfile;
     int v_freq;
 } simulator_config;
-
-#endif //__SIMULATOR_CONFIG_H__

@@ -6,6 +6,8 @@
 #include <oneapi/dpl/numeric>
 #include <oneapi/dpl/execution>
 #include <oneapi/dpl/iterator>
+#else
+#include <execution>
 #endif
 
 #include <vector>

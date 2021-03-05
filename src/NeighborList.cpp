@@ -28,18 +28,19 @@ using namespace oneapi;
 
 NeighborList::NeighborList():
 list(),
+listptr(nullptr),
 rlist(0.0),
-rlist2(0.0),
-listptr(nullptr)
+rlist2(0.0)
 {}
 
 NeighborList::NeighborList(int natoms, double _rlist) :
 list(natoms),
+listptr(nullptr),
 rlist(_rlist),
-rlist2(_rlist * _rlist),
-listptr(nullptr)
+rlist2(_rlist * _rlist)
 {
-    listptr = &list[0];
+    listptr = &list[0][0];
+
 }
 
 void NeighborList::UpdateHostCPU(vector <Vec3> &x, CubicBox &box)

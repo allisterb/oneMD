@@ -1,5 +1,4 @@
-
-/*
+/* Based on https://github.com/wesbarnett/lennardjones" by James W. Barnett
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,12 +19,12 @@
  *
  */
 
-#ifndef THERMOSTAT_H
-#define THERMOSTAT_H
+#pragma once
 
-#include "Vec3.hh"
 #include <random>
 #include <math.h>
+
+#include "Vec3.hh"
 
 using namespace std;
 
@@ -40,5 +39,3 @@ class Thermostat {
         Thermostat(double reft, double coll_freq, double dt);
         void DoCollisions(vector <Vec3> &v);
 };
-
-#endif

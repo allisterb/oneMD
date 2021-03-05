@@ -255,14 +255,10 @@ void System::WriteXTC(int step)
     box_xtc[Z][X] = 0.0;
     box_xtc[Z][Y] = 0.0;
     box_xtc[Z][Z] = this->box[Z]*0.1;
-
     x_xtc = new rvec[this->x.size()];
-#pragma omp for
-#ifdef MSVC
+
+    #pragma omp for
     for (int i = 0; i < x.size(); i++)
-#else
-    for (unsigned int i = 0; i < x.size(); i++)
-#endif
     {
         // Shift all the points to the center of the box
         this->x[i] = pbc(this->x[i], this->box);
@@ -317,7 +313,31 @@ void System::ResetTimer()
 
 void System::UpdateNeighborListHostCPU()
 {
-    this->nlist.UpdateHostCPU(this->x, this->box);
+    int rlist = this->nlist.rlist;
+    int rlist2 = this->nlist.rlist2;
+#ifndef USE_ONEAPI
+    #pragma omp parallel for schedule(guided, CHUNKSIZE)
+    for (int i = 0; i < this->list.size(); i++)
+    {
+        this->nlist.list.at(i).resize(0);
+    }
+#else
+    std::for_each(dpl::execution::par, this->nlist.list.begin(), this->nlist.list.end(), 
+        [](vector <int> &v){v.resize(0);});
+#endif
+    // Atoms are not double counted in the neighbor list. That is, when atom j
+    // is on atom i's list, the opposite is not true.
+    #pragma omp parallel for schedule(guided, CHUNKSIZE)
+    for (int i = 0; i < x.size()-1; i++)
+    {
+        for (unsigned int j = i+1; j < x.size(); j++)
+        {
+            if (distance2(x.at(i), x.at(j), box) < rlist2)
+            {
+                this->nlist.list.at(i).push_back(j);
+            }
+        }
+    }
     return;
 }
 
@@ -436,12 +456,40 @@ void System::IntegrateHostCPU(int a, bool tcoupl)
 #ifdef USE_ONEAPI
 void System::UpdateNeighborListCPU()
 {
-    throw new NotImplementedException();
+    auto _natoms = static_cast<size_t>(natoms);
+    //std::for_each(dpl::execution::par, this->nlist.list.begin(), this->nlist.list.end(), 
+    //    [_natoms](vector <int> &v){v.resize(_natoms);});
+    sycl::buffer<int, 2> n_dev_buf {{_natoms, _natoms}};
+    sycl::buffer<Vec3, 1> x_host_buf(&x[0], sycl::range(natoms));
+    
+    q.submit([&](sycl::handler &h) {
+        sycl::stream out(1024, 256, h);
+        auto n_dev_a = n_dev_buf.get_access<sycl::access::mode::write>(h);
+        auto x_host_a = x_host_buf.get_access<sycl::access::mode::read>(h);
+        h.parallel_for(sycl::range(natoms, natoms), [=](sycl::id<2> idx) {
+        //    auto a = mkl::vm::enums::mode::ep;
+        //    //out << (x_host_a[idx[0]] + x_host_a[idx[0]].) ;
+        });
+    });
+    exit(0);
+    
+
+    for (int i = 0; i < x.size()-1; i++)
+    {
+        for (unsigned int j = i+1; j < x.size(); j++)
+        {
+            if (distance2(x.at(i), x.at(j), box) < nlist.rlist2)
+            {
+                this->nlist.list.at(i).push_back(j);
+            }
+        }
+    }
+
 }
 
 void System::CalcForceCPU()
 {
-    std::fill_n(dpl::execution::par_unseq, System::f.begin(), System::f.size(), 0.0);
+    //std::fill_n(dpl::execution::par_unseq, System::f.begin(), System::f.size(), 0.0);
     int ncut = 0;
     double pe = 0.0;
     double *f_array = sycl::malloc_device<double>(natoms, q);
@@ -653,7 +701,9 @@ void LJ::CPURun()
     auto device_name = q.get_device().get_info<sycl::info::device::name>();
     info("Using CPU device: {}.", device_name);
     info("Press Ctrl-C to abort simulation.");
-    auto sim_start = std::chrono::high_resolution_clock::now();
+    // auto sim_start = std::chrono::high_resolution_clock::now();
+    sys.UpdateNeighborListCPU();
+    /**
     sys.UpdateNeighborListHostCPU();
     sys.CalcForceHostCPU();
     sys.PrintHeader();
@@ -717,5 +767,6 @@ void LJ::CPURun()
     sys.ErrorAnalysis(conf.nblocks);
     sys.NormalizeAverages();
     sys.PrintAverages();
+    */
 } 
 #endif

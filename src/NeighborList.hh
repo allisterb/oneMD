@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef NEIGHBORLIST_H
-#define NEIGHBORLIST_H
+#pragma once
 
 #ifdef USE_ONEAPI
 // oneDPL headers should be included before standard headers
@@ -37,7 +36,7 @@ class NeighborList {
         vector <vector<int>> list;
         double rlist;
         double rlist2;
-        void* listptr;
+        int* listptr;
         NeighborList();
         NeighborList(int natoms, double rlist);
         int GetNeighbor(int i, int j);
@@ -45,5 +44,3 @@ class NeighborList {
         void Init(int natoms, double rlist);
         void UpdateHostCPU(vector <Vec3> &x, CubicBox &box);
 };
-
-#endif

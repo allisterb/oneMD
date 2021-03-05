@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef __SYSTEM_H__
-#define __SYSTEM_H__
+#pragma once
 
 #ifdef USE_ONEAPI
 #include "dpc_common.hpp"
@@ -48,7 +47,7 @@ using namespace oneapi;
 #include "CubicBox.hh"
 #include "Velocity.hh"
 #include "xdrfile_xtc.h"
-#include "system_configuration.h"
+#include "simulator_config.h"
 #include "spdlog/spdlog.h"
 
 using namespace std;
@@ -60,7 +59,7 @@ constexpr double oneSixth = 1.0/6.0;
 class System 
 {
     private:
-        system_configuration config;  // system configuration
+        simulator_config config;  // system configuration
         const double dt;              // time step
         const double ecut;            // potential energy at cutoff
         const double entot;           // instantaneous total energy (ke + pe)
@@ -72,16 +71,16 @@ class System
         const double i2natoms;        // 1.0(2.0*natoms)
         const double i3natoms;        // 1.0(3.0*natoms)
         const double ke;              // instantaneous kinetic energy
-        double pe;              // instantaneous potential energy
-        double press;           // instantaneous pressure
+        double pe;                    // instantaneous potential energy
+        double press;                 // instantaneous pressure
         const double ptail;           // pressure tail correction
         const double rcut2;           // rcut*rcut
         const double rho;             // density (constant)
         const double rhokB;           // density * boltzmann's constant
-        double temp;            // instantaneous temperature
-        double vol;             // volume (constant)
+        double temp;                  // instantaneous temperature
+        double vol;                   // volume (constant)
         const int natoms;             // number of atoms in system
-        int nsample;            // counter of number of samples
+        int nsample;                  // counter of number of samples
         const int nsteps;             // number of steps for simulation to perform
         NeighborList nlist;
         Rdf rdf;
@@ -101,8 +100,8 @@ class System
         sycl::queue q;
         #endif
     public:
-        System(system_configuration conf, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
-        void Initialize(system_configuration conf, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
+        System(simulator_config conf, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
+        void Initialize(simulator_config conf, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
         void UpdateNeighborListHostCPU();
         void CalcForceHostCPU();
         void IntegrateHostCPU(int a, bool tcoupl);
@@ -124,4 +123,3 @@ class System
         void ResetTimer();
         CubicBox box;
 };
-#endif //__SYSTEM_H__

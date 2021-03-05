@@ -1,5 +1,4 @@
-
-/*
+/* Based on https://github.com/wesbarnett/lennardjones" by James W. Barnett
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,12 +19,13 @@
  *
  */
 
-#ifndef THERMODYNAMICVARIABLE_H
-#define THERMODYNAMICVARIABLE_H
+#pragma once 
 
-#include "Vec3.hh"
 #include <math.h>
 #include <vector>
+
+#include "Vec3.hh"
+
 using namespace std;
 
 class ThermodynamicVariable {
@@ -41,4 +41,3 @@ class ThermodynamicVariable {
         void Normalize();
         void Sample(double value);
 };
-#endif

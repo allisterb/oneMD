@@ -20,8 +20,7 @@
  *
  */
 
-#ifndef VEC3_H
-#define VEC3_H
+#pragma once
 
 #define CHUNKSIZE 15
 #include "xdrfile.h"
@@ -29,12 +28,13 @@
 using namespace std;
 
 /** X coordinate */
-const int X = 0;
+constexpr int X = 0;
 /** Y coordinate */
-const int Y = 1;
+constexpr int Y = 1;
 /** Z coordinate */
-const int Z = 2;
+constexpr int Z = 2;
 
+#ifndef USE_ONEAPI
 class Vec3 {
 
 private:
@@ -56,5 +56,13 @@ public:
     double& operator[](int i);
     const double& operator[](int i) const;
 };
+#else
+#include "dpc_common.hpp"
+#include <CL/sycl.hpp>
+#include <mkl_vml.h>
+
+using Vec3 = sycl::double3;
+
+//void pbc(sycl::queue& exec_queue, int64_t n, sycl::buffer<Vec3,1>& a, sycl::buffer<Vec3,1>& y);
 
 #endif

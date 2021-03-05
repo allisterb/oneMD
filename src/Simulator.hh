@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef __SIMULATOR_H__
-#define __SIMULATOR_H__
+#pragma once
 
 #ifdef USE_ONEAPI
 // oneDPL headers should be included before standard headers
@@ -76,5 +75,3 @@ class Simulator {
     static simulator_config default_config();
     static int config_ini_handler(void* config, const char* section, const char* name, const char* value);
 };
-
-#endif // __SIMULATOR_H__

@@ -1,5 +1,4 @@
-
-/*
+/* Based on https://github.com/wesbarnett/lennardjones" by James W. Barnett
  * Copyright (C) 2015 James W. Barnett <jbarnet4@tulane.edu>
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,12 +19,6 @@
  *
  */
 
-#ifndef RDF_H
-#define RDF_H
-
-#include "Vec3.hh"
-#include "CubicBox.hh"
-
 #include <fstream>
 #include <iomanip>
 #include <math.h>
@@ -33,6 +26,9 @@
 #include <vector>
 
 using namespace std;
+
+#include "Vec3.hh"
+#include "CubicBox.hh"
 
 class Rdf {
     private:
@@ -49,6 +45,3 @@ class Rdf {
         void normalize(int natoms, CubicBox &box);
         void output();
 };
-
-
-#endif

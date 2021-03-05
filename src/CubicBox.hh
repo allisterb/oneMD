@@ -20,12 +20,13 @@
  *
  */
 
-#ifndef CubicBox_H
-#define CubicBox_H
+#pragma once
+
+#include <vector>
 
 #include "Vec3.hh"
 #include "xdrfile.h"
-#include <vector>
+
 using namespace std;
 
 /** @brief Box dimensions.
@@ -51,5 +52,3 @@ double dot(Vec3 a, Vec3 b);
 double magnitude(Vec3 x);
 Vec3 pbc(Vec3 a, CubicBox box);
 double volume(CubicBox box);
-
-#endif
