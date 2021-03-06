@@ -57,7 +57,6 @@ const float& CubicBox::operator[](int i) const
 
 Vec3 pbc(Vec3 a, CubicBox box)
 {
-
     a[Z] -= box[Z] * nearbyint(a[Z] / box[Z]);
     a[Y] -= box[Y] * nearbyint(a[Y] / box[Y]);;
     a[X] -= box[X] * nearbyint(a[X] / box[X]);;

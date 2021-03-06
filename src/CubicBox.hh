@@ -41,9 +41,13 @@ private:
 public:
     CubicBox();
     CubicBox(float x, float y, float z);
+#ifndef USE_ONEAPI
     float& operator[] (int i);
     const float& operator[] (int i) const;
-
+#else
+    SYCL_EXTERNAL float& operator[] (int i);
+    SYCL_EXTERNAL const float& operator[] (int i) const;
+#endif
 };
 
 double distance(Vec3 a, Vec3 b, CubicBox box);

@@ -34,7 +34,8 @@ int main (int argc, char *argv[])
     ValueArg<int> npArg("", "np","Number of particles for simulation. Default is 100",false, 100,"integer");
     ValueArg<int> tsArg("", "ts","Number of time steps for simulation. Default is 10000.",false, 10000,"integer");
     ValueArg<double> tsdeltaArg("", "dt","Timestep delta in seconds for simulation. Default is 0.005.",false, 0.005, "double");
-    SwitchArg debugArg("d","debug","Enable debug-level logging.", cmd, false);
+    SwitchArg debugArg("d","debug","Enable debug logging.", cmd, false);
+    ValueArg<int> debugLogLevelArg("l", "debug-level","Debug logging level. Default is 1.",false, 1,"integer");
     SwitchArg hostCPUDeviceArg("0","host-cpu","Select the host CPU device.", cmd, false);
     SwitchArg cpuDeviceArg("1","cpu","Select the SYCL CPU device.", cmd, false);
     cmd.add(devArg);
@@ -42,12 +43,14 @@ int main (int argc, char *argv[])
     cmd.add(npArg);
     cmd.add(tsArg);
     cmd.add(tsdeltaArg);
+    cmd.add(debugLogLevelArg);
     cmd.parse(argc, argv);
     auto debugLog = debugArg.getValue();
+    Simulator::debug_log_level = debugLogLevelArg.getValue();
     if (debugLog) {
       set_level(level::debug);
       config.debug = true;
-      info("Debug-level logging enabled.");
+      info("Debug-level logging enabled. Debug log level is {}.", Simulator::debug_log_level);
     }
     auto sim_name = Util::upper(simArg.getValue());
     auto nd = ndArg.getValue();

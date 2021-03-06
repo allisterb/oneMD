@@ -24,6 +24,8 @@
 
 NotImplementedException::NotImplementedException() : std::logic_error("Not yet implemented.") { };
 
+int Simulator::debug_log_level = 0;
+
 Simulator::Simulator(const string _name, const int _nd, const int _np, const int _ts, const double _ts_delta, const Device _device) :
   name(_name),
   nd(_nd),

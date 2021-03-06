@@ -11,8 +11,6 @@
                 "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/latest/linux/compiler/include/",
                 "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/latest/linux/include/",
                 "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/latest/linux/include/sycl"
-
-
             ],
             "defines": [],
             "compilerPath": "/glob/development-tools/versions/oneapi/gold/inteloneapi/compiler/2021.1.2/linux/bin/clang",

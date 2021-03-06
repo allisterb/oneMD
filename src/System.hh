@@ -123,3 +123,7 @@ class System
         void ResetTimer();
         CubicBox box;
 };
+
+#ifdef USE_ONEAPI
+SYCL_EXTERN void PrintDebug(sycl:stream s, const* char m);
+#endif

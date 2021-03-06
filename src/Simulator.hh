@@ -60,6 +60,7 @@ class Simulator {
     virtual void Compute (int nd, int np, double pos[], double vel[], double mass, double f[], double &pot, double &kin) = 0;
     virtual void Update (int nd, int np, double pos[], double vel[], double f[], double acc[], double mass, double dt) = 0;
     virtual void HostCPURun() = 0;
+    static int debug_log_level;
 #ifdef USE_ONEAPI
     virtual void CPURun();
     virtual void GPURun();

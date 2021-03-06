@@ -140,8 +140,14 @@ class LJ : public Simulator {
     void HostCPURun();
 #ifdef USE_ONEAPI
     void CPURun();
+
 #endif
     System sys;
     simulator_config conf;
 };
+#endif
+
+#ifdef USE_ONEAPI
+template<typename T>
+SYCL_EXTERNAL void PrintDebug(sycl::stream s, const char* name, T m);
 #endif

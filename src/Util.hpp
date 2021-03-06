@@ -16,6 +16,8 @@
 #include <string>
 #include <chrono>
 
+#include "spdlog/spdlog.h"
+
 using namespace std;
 
 class Util {
@@ -24,7 +26,7 @@ class Util {
             std::transform(str.begin(), str.end(),str.begin(), ::toupper);
             return str;
         }
-        
+
 #ifdef USE_ONEAPI
         template <typename T>
         size_t size_2d(const std::vector<std::vector<T>>& v) {

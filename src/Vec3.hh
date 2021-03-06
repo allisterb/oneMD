@@ -59,7 +59,7 @@ public:
 #else
 #include "dpc_common.hpp"
 #include <CL/sycl.hpp>
-#include <mkl_vml.h>
+#include <oneapi/mkl/vm.hpp>
 
 using Vec3 = sycl::double3;
 
