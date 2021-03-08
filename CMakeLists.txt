@@ -134,7 +134,7 @@ target_link_libraries(${TGT} PUBLIC
 
 if (USE_ONEAPI)
   target_compile_definitions(${TGT} PRIVATE USE_ONEAPI=1)
-target_link_libraries(${TGT} PRIVATE tbb)
+target_link_libraries(${TGT} PRIVATE tbb_debug)
 else()
   target_link_libraries(${TGT} PRIVATE OpenMP::OpenMP_CXX)
 endif()

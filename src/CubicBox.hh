@@ -29,30 +29,31 @@
 
 using namespace std;
 
-/** @brief Box dimensions.
- * @details This is just a two dimensional array initialized to three
- * items in each dimension. To access the elements of the array use operator().
- * For example, to if the box is cubic and your have a CubicBox object named
- * mybox, to get the X dimension do mybox(0). If you it is truly a CubicBox
- * (not cubic) you can access elements with mybox(i,j).*/
 class CubicBox {
-private:
-    array <float,3> box;
-public:
-    CubicBox();
-    CubicBox(float x, float y, float z);
-#ifndef USE_ONEAPI
-    float& operator[] (int i);
-    const float& operator[] (int i) const;
-#else
-    SYCL_EXTERNAL float& operator[] (int i);
-    SYCL_EXTERNAL const float& operator[] (int i) const;
-#endif
+    private:
+    #ifndef USE_ONEAPI
+        array <float,3> box;
+    #else
+        sycl::float3 box;
+    #endif
+    public:
+        CubicBox();
+        CubicBox(float x, float y, float z);
+        float& operator[] (int i);
+        const float& operator[] (int i) const;  
 };
-
 double distance(Vec3 a, Vec3 b, CubicBox box);
 double distance2(Vec3 a, Vec3 b, CubicBox box);
 double dot(Vec3 a, Vec3 b);
 double magnitude(Vec3 x);
 Vec3 pbc(Vec3 a, CubicBox box);
 double volume(CubicBox box);
+
+#ifdef USE_ONEAPI
+    static sycl::event distance_kernel(sycl::queue q, Vec3 a, Vec3 b, CubicBox box, const double& d);
+    static sycl::event distance2_kernel(sycl::queue q,Vec3 a, Vec3 b, CubicBox box, const double& d);
+    static sycl::event dot_kernel(sycl::queue q, Vec3 a, Vec3 b, const double& d);
+    static sycl::event magnitude_kernel(sycl::queue q, Vec3 x, const double& m);
+    static sycl::event pbc_kernel(sycl::queue q, Vec3 a, CubicBox box, const Vec3& v);
+    static sycl::event volume_kernel(sycl::queue q, CubicBox box, const double& v);
+#endif

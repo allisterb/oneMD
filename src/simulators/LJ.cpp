@@ -487,7 +487,7 @@ void System::UpdateNeighborListCPU()
         //auto b = 
         h.parallel_for(sycl::range(natoms, natoms), [=](sycl::id<2> idx) {
             //mkl::vm::
-            printd(x_host_a[idx[0]] + x_host_a[idx[0]] + _box[0]);
+            //printd(x_host_a[idx[0]] + x_host_a[idx[0]] + _box//[0]);
             
         });
     });

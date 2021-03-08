@@ -51,12 +51,6 @@ void NeighborList::UpdateHostCPU(vector <Vec3> &x, CubicBox &box)
     {
         this->list.at(i).resize(0);
     }
-#else
-    std::for_each(dpl::execution::par_unseq, this->list.begin(), this->list.end(), 
-        [](vector <int> &v){v.resize(0);});
-#endif
-    // Atoms are not double counted in the neighbor list. That is, when atom j
-    // is on atom i's list, the opposite is not true.
     #pragma omp parallel for schedule(guided, CHUNKSIZE)
     for (int i = 0; i < x.size()-1; i++)
     {
@@ -68,8 +62,16 @@ void NeighborList::UpdateHostCPU(vector <Vec3> &x, CubicBox &box)
             }
         }
     }
-    return;
+#else
+    std::for_each(dpl::execution::par_unseq, this->list.begin(), this->list.end(), 
+        [](vector <int> &v){v.resize(0);});
+    // Atoms are not double counted in the neighbor list. That is, when atom j
+    // is on atom i's list, the opposite is not true.
+
+#endif    
+return;
 }
+
 
 int NeighborList::GetSize(int i)
 {
