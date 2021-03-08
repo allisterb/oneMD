@@ -468,26 +468,26 @@ SYCL_EXTERNAL void PrintDebug(sycl::stream s, const char* name, T m)
 void System::UpdateNeighborListCPU()
 {
     auto _natoms = static_cast<size_t>(natoms);
-    auto _box = box;
+    auto _box = this->box.box;
     std::for_each(dpl::execution::par, this->nlist.list.begin(), this->nlist.list.end(), 
         [_natoms](vector <int> &v){v.resize(_natoms);});
     sycl::buffer<int, 2> n_dev_buf {{_natoms, _natoms}};
     sycl::buffer<Vec3, 1> x_host_buf(&x[0], sycl::range(natoms));
-    CubicBox boxxx(1.0, 2.0, 3.0);
-    sycl::buffer<CubicBox, 1> box_buf {&boxxx, 1};
+    sycl::buffer<sycl::float3, 1> box_buf(&_box, sycl::range(1));
     q.submit([&](sycl::handler &h) {
         sycl::stream out(1024, 256, h);
         auto printd = [out] (auto m) {
             PrintDebug(out, "update_neighbor_list", m);
         };
 
-      
         auto n_dev_a = n_dev_buf.get_access<sycl::access::mode::write>(h);
         auto x_host_a = x_host_buf.get_access<sycl::access::mode::read>(h);
+        auto box_a = box_buf.get_access<sycl::access::mode::read>(h);
         //auto b = 
         h.parallel_for(sycl::range(natoms, natoms), [=](sycl::id<2> idx) {
             //mkl::vm::
-            //printd(x_host_a[idx[0]] + x_host_a[idx[0]] + _box//[0]);
+            printd(box_a[0]);
+            //printd(x_host_a[idx[0]] + x_host_a[idx[0]]);
             
         });
     });

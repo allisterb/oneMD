@@ -30,17 +30,16 @@
 using namespace std;
 
 class CubicBox {
-    private:
-    #ifndef USE_ONEAPI
-        array <float,3> box;
-    #else
-        sycl::float3 box;
-    #endif
     public:
         CubicBox();
         CubicBox(float x, float y, float z);
         float& operator[] (int i);
-        const float& operator[] (int i) const;  
+        const float& operator[] (int i) const;
+        #ifndef USE_ONEAPI
+            array <float,3> box;
+        #else
+            sycl::float3 box;
+        #endif
 };
 double distance(Vec3 a, Vec3 b, CubicBox box);
 double distance2(Vec3 a, Vec3 b, CubicBox box);
