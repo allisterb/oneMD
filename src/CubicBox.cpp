@@ -20,11 +20,6 @@
  *
  */
 
-#include <fstream>
-#include <math.h>
-#include <string>
-#include <vector>
-
 #include "CubicBox.hh"
 
 CubicBox::CubicBox() {}
@@ -47,15 +42,15 @@ const float& CubicBox::operator[](int i) const
 
 Vec3 pbc(Vec3 a, CubicBox box)
 {
-    a[Z] -= box[Z] * nearbyint(a[Z] / box[Z]);
-    a[Y] -= box[Y] * nearbyint(a[Y] / box[Y]);;
-    a[X] -= box[X] * nearbyint(a[X] / box[X]);;
+    a[Z] -= box[Z] * __nearbyint(a[Z] / box[Z]);
+    a[Y] -= box[Y] * __nearbyint(a[Y] / box[Y]);;
+    a[X] -= box[X] * __nearbyint(a[X] / box[X]);;
     return a;
 }
 
 double distance(Vec3 a, Vec3 b, CubicBox box)
 {
-    return sqrt(distance2(a, b, box));
+    return __sqrt(distance2(a, b, box));
 }
 
 double distance2(Vec3 a, Vec3 b, CubicBox box)
@@ -72,7 +67,7 @@ double dot(Vec3 a, Vec3 b)
 
 double magnitude(Vec3 x)
 {
-    return sqrt(dot(x, x));
+    return __sqrt(dot(x, x));
 }
 
 double volume(CubicBox box)
@@ -80,10 +75,11 @@ double volume(CubicBox box)
     return box[X] * box[Y] * box[Z];
 }
 
+/*
 #ifdef USE_ONEAPI
 sycl::event distance_kernel(sycl::queue q, Vec3 a, Vec3 b, CubicBox box, const double& d)
 {
-    throw std::runtime_error("Not im");
+    
 }
 sycl::event distance2_kernel(sycl::queue q,Vec3 a, Vec3 b, CubicBox box, const double& d)
 {
@@ -100,7 +96,9 @@ sycl::event magnitude_kernel(sycl::queue q, Vec3 x, const double& m)
 
 sycl::event pbc_kernel(sycl::queue q, Vec3 a, CubicBox box, const Vec3& v)
 {
-    throw std::runtime_error("Not im");
+    
+    //oneapi::mkl::vm::sub(q,)
+    //throw std::runtime_error("Not im");
 }
 
 sycl::event volume_kernel(sycl::queue q, CubicBox box, const double& v)
@@ -109,3 +107,4 @@ sycl::event volume_kernel(sycl::queue q, CubicBox box, const double& v)
 }
 
 #endif
+*/

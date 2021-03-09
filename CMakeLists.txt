@@ -109,6 +109,8 @@ endif()
 
 add_executable(${TGT} ${FIGLET_SRC} ${SRC})
 target_compile_features(${TGT} PRIVATE cxx_std_17)
+#target_compile_options(${TGT} PRIVATE "-fsycl-device-lib=all")
+set_source_files_properties(common.hh PROPERTIES COMPILE_OPTIONS "-fsycl-device-lib=all")
 if (MSVC)
   target_compile_definitions(${TGT} PRIVATE MSVC = 1)
   target_compile_features(${TGT} PRIVATE cxx_std_20)

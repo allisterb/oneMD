@@ -22,9 +22,11 @@
 
 #pragma once
 
-#define CHUNKSIZE 15
-#include "xdrfile.h"
 #include <array>
+#include "xdrfile.h"
+
+#include "common.hh"
+
 using namespace std;
 
 /** X coordinate */
@@ -57,10 +59,6 @@ public:
     const double& operator[](int i) const;
 };
 #else
-#include "dpc_common.hpp"
-#include <CL/sycl.hpp>
-#include <oneapi/mkl/vm.hpp>
-
 using Vec3 = sycl::double3;
 
 

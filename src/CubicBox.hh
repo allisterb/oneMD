@@ -22,19 +22,23 @@
 
 #pragma once
 
-#include <vector>
+#include <fstream>
+#include <string>
+#include <vector> 
 
+#include "common.hh"
 #include "Vec3.hh"
 #include "xdrfile.h"
 
 using namespace std;
 
+
 class CubicBox {
     public:
         CubicBox();
         CubicBox(float x, float y, float z);
-        float& operator[] (int i);
-        const float& operator[] (int i) const;
+        __SYCL_LINK float& operator[] (int i);
+        __SYCL_LINK const float& operator[] (int i) const;
         #ifndef USE_ONEAPI
             array <float,3> box;
         #else
@@ -48,11 +52,14 @@ double magnitude(Vec3 x);
 Vec3 pbc(Vec3 a, CubicBox box);
 double volume(CubicBox box);
 
-#ifdef USE_ONEAPI
-    static sycl::event distance_kernel(sycl::queue q, Vec3 a, Vec3 b, CubicBox box, const double& d);
-    static sycl::event distance2_kernel(sycl::queue q,Vec3 a, Vec3 b, CubicBox box, const double& d);
-    static sycl::event dot_kernel(sycl::queue q, Vec3 a, Vec3 b, const double& d);
-    static sycl::event magnitude_kernel(sycl::queue q, Vec3 x, const double& m);
-    static sycl::event pbc_kernel(sycl::queue q, Vec3 a, CubicBox box, const Vec3& v);
-    static sycl::event volume_kernel(sycl::queue q, CubicBox box, const double& v);
+ 
+/*
+static SYCL_EXTERNALsycl::event distance_kernel(sycl::queue q, Vec3 a, Vec3 b, CubicBox box);
+static sycl::event distance2_kernel(sycl::queue q,Vec3 a, Vec3 b, CubicBox box, const double& d);
+static sycl::event dot_kernel(sycl::queue q, Vec3 a, Vec3 b, const double& d);
+static sycl::event magnitude_kernel(sycl::queue q, Vec3 x, const double& m);
+static sycl::event pbc_kernel(sycl::queue q, Vec3 a, CubicBox box, const Vec3& v);
+static sycl::event volume_kernel(sycl::queue q, CubicBox box, const double& v);
+
 #endif
+*/

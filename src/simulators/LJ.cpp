@@ -467,11 +467,11 @@ SYCL_EXTERNAL void PrintDebug(sycl::stream s, const char* name, T m)
 //const int printd = sycl::ONEAPI::experimental::printf;
 void System::UpdateNeighborListCPU()
 {
-    auto _natoms = static_cast<size_t>(natoms);
+    auto n = static_cast<size_t>(natoms);
     auto _box = this->box.box;
     std::for_each(dpl::execution::par, this->nlist.list.begin(), this->nlist.list.end(), 
-        [_natoms](vector <int> &v){v.resize(_natoms);});
-    sycl::buffer<int, 2> n_dev_buf {{_natoms, _natoms}};
+        [n](vector <int> &v){v.resize(n);});
+    sycl::buffer<int, 2> n_dev_buf {{n, n}};
     sycl::buffer<Vec3, 1> x_host_buf(&x[0], sycl::range(natoms));
     sycl::buffer<sycl::float3, 1> box_buf(&_box, sycl::range(1));
     q.submit([&](sycl::handler &h) {
@@ -483,10 +483,10 @@ void System::UpdateNeighborListCPU()
         auto n_dev_a = n_dev_buf.get_access<sycl::access::mode::write>(h);
         auto x_host_a = x_host_buf.get_access<sycl::access::mode::read>(h);
         auto box_a = box_buf.get_access<sycl::access::mode::read>(h);
-        //auto b = 
+        auto bbbb = std::nearbyint(1);
         h.parallel_for(sycl::range(natoms, natoms), [=](sycl::id<2> idx) {
             //mkl::vm::
-            printd(box_a[0]);
+            printd(dot(box_a[0], box_a[0]));
             //printd(x_host_a[idx[0]] + x_host_a[idx[0]]);
             
         });
