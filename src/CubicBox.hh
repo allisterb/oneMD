@@ -50,14 +50,4 @@ SYCL_LINK double distance(Vec3 a, Vec3 b, CubicBox box);
 SYCL_LINK double distance2(Vec3 a, Vec3 b, CubicBox box);
 SYCL_LINK double dot(Vec3 a, Vec3 b);
 SYCL_LINK double magnitude(Vec3 x);
-SYCL_LINK double volume(CubicBox box); 
-/*
-static SYCL_EXTERNALsycl::event distance_kernel(sycl::queue q, Vec3 a, Vec3 b, CubicBox box);
-static sycl::event distance2_kernel(sycl::queue q,Vec3 a, Vec3 b, CubicBox box, const double& d);
-static sycl::event dot_kernel(sycl::queue q, Vec3 a, Vec3 b, const double& d);
-static sycl::event magnitude_kernel(sycl::queue q, Vec3 x, const double& m);
-static sycl::event pbc_kernel(sycl::queue q, Vec3 a, CubicBox box, const Vec3& v);
-static sycl::event volume_kernel(sycl::queue q, CubicBox box, const double& v);
-
-#endif
-*/
+SYCL_LINK double volume(CubicBox box);

@@ -60,8 +60,4 @@ public:
 };
 #else
 using Vec3 = sycl::double3;
-
-
-//void pbc(sycl::queue& exec_queue, int64_t n, sycl::buffer<Vec3,1>& a, sycl::buffer<Vec3,1>& y);
-
 #endif
