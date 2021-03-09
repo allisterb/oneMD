@@ -22,6 +22,7 @@
 
 #include "CubicBox.hh"
 
+#ifndef USE_ONEAPI
 CubicBox::CubicBox() {}
 
 CubicBox::CubicBox(float x, float y, float z)
@@ -42,15 +43,45 @@ const float& CubicBox::operator[](int i) const
 
 Vec3 pbc(Vec3 a, CubicBox box)
 {
-    a[Z] -= box[Z] * __nearbyint(a[Z] / box[Z]);
-    a[Y] -= box[Y] * __nearbyint(a[Y] / box[Y]);;
-    a[X] -= box[X] * __nearbyint(a[X] / box[X]);;
+    a[Z] -= box[Z] * nearbyint(a[Z] / box[Z]);
+    a[Y] -= box[Y] * nearbyint(a[Y] / box[Y]);;
+    a[X] -= box[X] * nearbyint(a[X] / box[X]);;
     return a;
+}
+double distance(Vec3 a, Vec3 b, CubicBox box)
+{
+    return sqrt(distance2(a, b, box));
+}
+
+double distance2(Vec3 a, Vec3 b, CubicBox box)
+{
+    Vec3 c = a - b;
+    c = pbc(c, box);
+    return dot(c, c);
+}
+double magnitude(Vec3 x)
+{
+    return sqrt(dot(x, x));
+}
+
+double volume(CubicBox box)
+{
+    return box[X] * box[Y] * box[Z];
+}
+
+double dot(Vec3 a, Vec3 b)
+{
+    return a[X] * b[X] + a[Y] * b[Y] + a[Z] * b[Z];
+}
+#else
+Vec3 pbc(Vec3 a, CubicBox box)
+{
+    return a - box * sycl::rint(a / box);
 }
 
 double distance(Vec3 a, Vec3 b, CubicBox box)
 {
-    return __sqrt(distance2(a, b, box));
+    return sycl::sqrt(distance2(a, b, box));
 }
 
 double distance2(Vec3 a, Vec3 b, CubicBox box)
@@ -60,21 +91,21 @@ double distance2(Vec3 a, Vec3 b, CubicBox box)
     return dot(c, c);
 }
 
-double dot(Vec3 a, Vec3 b)
-{
-    return a[X] * b[X] + a[Y] * b[Y] + a[Z] * b[Z];
-}
-
 double magnitude(Vec3 x)
 {
-    return __sqrt(dot(x, x));
+    return sycl::sqrt(dot(x, x));
 }
 
 double volume(CubicBox box)
 {
+    //auto zz = box.
     return box[X] * box[Y] * box[Z];
 }
-
+double dot(Vec3 a, Vec3 b)
+{
+    return sycl::dot(a, b);
+}
+#endif
 /*
 #ifdef USE_ONEAPI
 sycl::event distance_kernel(sycl::queue q, Vec3 a, Vec3 b, CubicBox box, const double& d)

@@ -8,14 +8,14 @@
 #include <CL/sycl.hpp>
 #include <oneapi/mkl/vm.hpp>
 
-#define __SYCL_LINK SYCL_EXTERNAL
+#define SYCL_LINK SYCL_EXTERNAL
 #define __sqrt sycl::sqrt
 #define __nearbyint std::nearbyint
 
 #else
 
 #include <cmath>
-#define __SYCL_LINK
+#define SYCL_LINK
 #define __sqrt sqrt
 #define __nearbyint nearbyint
 

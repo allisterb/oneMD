@@ -32,27 +32,25 @@
 
 using namespace std;
 
-
+#ifndef USE_ONEAPI
 class CubicBox {
     public:
         CubicBox();
         CubicBox(float x, float y, float z);
-        __SYCL_LINK float& operator[] (int i);
-        __SYCL_LINK const float& operator[] (int i) const;
-        #ifndef USE_ONEAPI
-            array <float,3> box;
-        #else
-            sycl::float3 box;
-        #endif
+        float& operator[] (int i);
+        const float& operator[] (int i) const;
+        array <float,3> box;
 };
-double distance(Vec3 a, Vec3 b, CubicBox box);
-double distance2(Vec3 a, Vec3 b, CubicBox box);
-double dot(Vec3 a, Vec3 b);
-double magnitude(Vec3 x);
-Vec3 pbc(Vec3 a, CubicBox box);
-double volume(CubicBox box);
+#else
+using CubicBox = sycl::double3;
+#endif
 
- 
+SYCL_LINK Vec3 pbc(Vec3 a, CubicBox box);
+SYCL_LINK double distance(Vec3 a, Vec3 b, CubicBox box);
+SYCL_LINK double distance2(Vec3 a, Vec3 b, CubicBox box);
+SYCL_LINK double dot(Vec3 a, Vec3 b);
+SYCL_LINK double magnitude(Vec3 x);
+SYCL_LINK double volume(CubicBox box); 
 /*
 static SYCL_EXTERNALsycl::event distance_kernel(sycl::queue q, Vec3 a, Vec3 b, CubicBox box);
 static sycl::event distance2_kernel(sycl::queue q,Vec3 a, Vec3 b, CubicBox box, const double& d);
