@@ -8,7 +8,7 @@
 #include <CL/sycl.hpp>
 
 #define SYCL_LINK SYCL_EXTERNAL
-
+#define kernel_printf sycl::ONEAPI::experimental::printf
 #else
 
 #define SYCL_LINK
