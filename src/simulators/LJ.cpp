@@ -471,10 +471,8 @@ void System::UpdateNeighborListCPU()
         sycl::buffer<Vec3, 1> x_host_buf(&x[0], sycl::range(n));
         sycl::buffer<sycl::double3, 1> box_buf(&this->box, sycl::range(1));
         q.submit([&](sycl::handler &h) {
-            sycl::stream out(1024, 256, h);
-            auto printd = [out] (auto m) {
-                out << "[kernel] [" << "update_neighbor_list" << "] " << m << sycl::endl;
-            };
+            #include "KernelLog.hpp"
+            __kernel_log("update_neighbor")
             auto n_dev_a = n_dev_buf.get_access<sycl::access::mode::write>(h);
             auto n_host_a = n_host_buf.get_access<sycl::access::mode::write>(h);
             auto x_host_a = x_host_buf.get_access<sycl::access::mode::read>(h);
@@ -485,16 +483,10 @@ void System::UpdateNeighborListCPU()
                 auto j = idx[1];
                 if (i < j) 
                 {   
-                    printd("Using indexes");
-                    printd(idx[0]);
-                    printd(idx[1]);
                     if (distance2(x_host_a[i], x_host_a[j], box_a[0]) < cut)
                     {
+                        printd2("Using this atom.", idx);
                         n_host_a[i][j] = 1;
-                    }
-                    else
-                    {
-                        //pr
                     }
                 }
                             
