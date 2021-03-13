@@ -34,13 +34,12 @@ rlist2(0.0)
 {}
 
 NeighborList::NeighborList(int natoms, double _rlist) :
-list(natoms),
+list(natoms, vector<int>(natoms)),
 listptr(nullptr),
 rlist(_rlist),
 rlist2(_rlist * _rlist)
 {
     listptr = &list[0][0];
-
 }
 
 void NeighborList::UpdateHostCPU(vector <Vec3> &x, CubicBox &box)
