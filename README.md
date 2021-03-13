@@ -16,24 +16,48 @@ omd --help
 ````
 from the project folder and you should see the oneMD help screen.
 ````
-u61437@s001-n058:~/oneMD$ ./omdd --help                                   
-                 __  __ ___                                               
- ___  _ _   ___ |  \/  |   \                                              
-/ _ \| ' \ / -_)| |\/| | |) |                                             
-\___/|_||_|\___||_|  |_|___/                                              
-                                                                          
-                                                                          
-USAGE:                                                                    
-                                                                          
-   ./omdd  [-e <string>] [--dt <integer>] [-t <integer>] [-n <integer>]   
-           [--nd <integer>] [-d] [--] [--version] [-h] <string>           
-                                                                          
-                                                                          
-Where:                                                                    
-                                                                          
-   -e <string>,  --device <string>                                        
-     Name of hardware device, accelerator or library to run simulation on.
-                                                                          
-...                               
+./omd --help
+                 __  __ ___
+ ___  _ _   ___ |  \/  |   \
+/ _ \| ' \ / -_)| |\/| | |) |
+\___/|_||_|\___||_|  |_|___/
+
+
+USAGE:
+
+   ./omd  [-l <integer>] [--dt <double>] [--ts <integer>] [--np <integer>]
+          [--nd <integer>] [--device <string>] [-1] [-0] [-d] [--]
+          [--version] [-h] <string>
+
+
+Where:
+
+   -l <integer>,  --debug-level <integer>
+     Debug logging level. Default is 1.
+
+   --dt <double>
+     Timestep delta in seconds for simulation. Default is 0.005.
+
+   --ts <integer>
+     Number of time steps for simulation. Default is 10000.
+
+   --np <integer>
+     Number of particles for simulation. Default is 100
+
+   --nd <integer>
+     Number of dimensions for simulation from 1-3. Default is 3.
+
+   --device <string>
+     Name of hardware device to run simulation on. Can be host_cpu, cpu,
+     gpu, or fpga. Default is host_cpu. Alternatively use the bool flag
+     selectors e.g. -0 or -1.
+
+   -1,  --cpu
+     Select the SYCL CPU device.
+
+   -0,  --host-cpu
+     Select the host CPU device.
+
+   -d,  --debug
+     Enable debug logging.                               
 ````
-Note that there seems to be a bug when oneMD is built in Release mode on Windows. Run `build-debug` on Windows if the simulation hangs on Windows and use the debug executable `omdd`.
