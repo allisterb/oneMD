@@ -27,12 +27,9 @@
 
 CubicBox::CubicBox() {}
 
-CubicBox::CubicBox(float x, float y, float z)
-{
-    this->box[X] = x;
-    this->box[Y] = y;
-    this->box[Z] = z;
-}
+CubicBox::CubicBox(float x, float y, float z) : box {x, y, z}
+{}
+
 float& CubicBox::operator[](int i)
 {
     return box[i];

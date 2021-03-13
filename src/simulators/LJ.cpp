@@ -451,12 +451,6 @@ void System::IntegrateHostCPU(int a, bool tcoupl)
 }
 
 #ifdef USE_ONEAPI
-template<typename T>
-SYCL_EXTERNAL void PrintDebug(sycl::stream s, const char* name, T m)
-{
-    s << "[kernel] [" << name << "] " << m << sycl::endl;
-}
-
 void System::UpdateNeighborListCPU()
 {
     auto n = static_cast<size_t>(natoms);
@@ -466,28 +460,28 @@ void System::UpdateNeighborListCPU()
             v.resize(n);
         });
     {
-        sycl::buffer<int, 2> n_dev_buf {{n, n}};
         sycl::buffer<int, 2> n_host_buf (&this->nlist.list[0][0], sycl::range(n, n));
         sycl::buffer<Vec3, 1> x_host_buf(&x[0], sycl::range(n));
         sycl::buffer<sycl::double3, 1> box_buf(&this->box, sycl::range(1));
+        
         q.submit([&](sycl::handler &h) {
-            #include "KernelLog.hpp"
-            __kernel_log("update_neighbor")
-            auto n_dev_a = n_dev_buf.get_access<sycl::access::mode::write>(h);
+            #include "kernel_logger.hpp"
+            __kernel_logger("update_neighbor")
             auto n_host_a = n_host_buf.get_access<sycl::access::mode::write>(h);
             auto x_host_a = x_host_buf.get_access<sycl::access::mode::read>(h);
+            auto dim = this->box[0];
             auto box_a = box_buf.get_access<sycl::access::mode::read>(h);
-            auto bbbb = std::nearbyint(1);
             h.parallel_for(sycl::range(n, n), [=](sycl::id<2> idx) {
                 auto i = idx[0];
                 auto j = idx[1];
+                auto b = box_a[0];
                 if (i < j) 
                 {   
-                    if (distance2(x_host_a[i], x_host_a[j], box_a[0]) < cut)
+                    if (distance2(x_host_a[i], x_host_a[j], b) < cut)
                     {
-                        printd2("Using this atom.", idx);
                         n_host_a[i][j] = 1;
                     }
+
                 }
                             
             });
@@ -583,10 +577,14 @@ bool LJ::Initialize()
 {
     info("Lennard-Jones simulation of {} atoms in a cubic box for {} steps.", 
         conf.natoms, conf.nsteps);
-    info("Original C++ code by James W. Barnett https://github.com/wesbarnett/lennardjones");
+    info("Neighbor cutoff-distance: {}", conf.rlist);
     if (!conf.debug)
     {
         info("Use --debug to print this simulator's complete configuration.");
+        if (Simulator::debug_log_level < 2) 
+        {
+            info("Use --debug -l 2 to print detailed calculation logs.");
+        }
     }
     else
     {
@@ -622,7 +620,7 @@ bool LJ::Initialize()
         cout << setw(30) << left << "coll_freq = " << setw(30) << left << conf.coll_freq << endl;
         cout << endl;
         cout << setw(30) << left << "[ rdf ]" << endl;
-        cout << setw(30) << left << "sample = " << setw(30) << left << conf.dordfstr << endl;
+        cout << setw(30) << left << "sample = " << setw(30) << left << conf.dordf << endl;
         cout << setw(30) << left << "nbins = " << setw(30) << left << conf.rdf_nbins << endl;
         cout << setw(30) << left << "outfile = " << setw(30) << left << conf.rdf_outfile << endl;
         cout << setw(30) << left << "freq = " << setw(30) << left << conf.rdf_freq << endl;

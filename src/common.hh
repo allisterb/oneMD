@@ -12,5 +12,5 @@
 #else
 
 #define SYCL_LINK
-
+#define kernel_printf std::printf
 #endif

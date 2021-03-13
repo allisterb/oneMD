@@ -1,21 +1,12 @@
 #pragma once
 
-#ifdef USE_ONEAPI
-// oneDPL headers should be included before standard headers
-#include <oneapi/dpl/algorithm>
-#include <oneapi/dpl/numeric>
-#include <oneapi/dpl/execution>
-#include <oneapi/dpl/iterator>
-#else
-#include <execution>
-#endif
-
 #include <vector>
 #include <algorithm>
 #include <numeric>
 #include <string>
 #include <chrono>
 
+#include "common.hh"
 #include "spdlog/spdlog.h"
 
 using namespace std;
@@ -26,16 +17,12 @@ class Util {
             std::transform(str.begin(), str.end(),str.begin(), ::toupper);
             return str;
         }
-
 #ifdef USE_ONEAPI
-        template <typename T>
-        size_t size_2d(const std::vector<std::vector<T>>& v) {
-            return std::reduce(dpl::execution::par_unseq, v.begin(), v.end(), size_t(), [](auto a, auto b){ return a.size() + b.size(); });
-        }
-#else
-        template <typename T>
-        size_t size_2d(const std::vector<std::vector<T>>& v) {
-            return std::reduce(std::execution::par_unseq, v.begin(), v.end(), size_t(), [](auto a, auto b){ return a.size() + b.size(); });
+        static double event_exec_time(const sycl::event &e) {
+            double start_k = e.get_profiling_info<sycl::info::event_profiling::command_start>();
+            double end_k = e.get_profiling_info<sycl::info::event_profiling::command_end>();
+            double kernel_time = (end_k - start_k) * 1e-9; // ns to s
+            return kernel_time;
         }
 #endif        
 };

@@ -21,11 +21,8 @@
 
 #pragma once
 
+#include "common.hh"
 #ifdef USE_ONEAPI
-#include "dpc_common.hpp"
-#include <CL/sycl.hpp>
-using namespace oneapi;
-
 // oneDPL headers should be included before standard headers
 #include <oneapi/dpl/algorithm>
 #include <oneapi/dpl/execution>
@@ -38,17 +35,18 @@ using namespace oneapi;
 #include <string>
 #include <vector>
 
+#include "spdlog/spdlog.h"
+
 #include "Vec3.hh"
+#include "CubicBox.hh"
 #include "NeighborList.hh"
 #include "PdbFile.hh"
 #include "Rdf.hh"
 #include "Thermostat.hh"
 #include "ThermodynamicVariable.hh"
-#include "CubicBox.hh"
 #include "Velocity.hh"
 #include "xdrfile_xtc.h"
 #include "simulator_config.h"
-#include "spdlog/spdlog.h"
 
 using namespace std;
 using namespace spdlog;
@@ -56,33 +54,38 @@ using namespace spdlog;
 constexpr double kB = 1.3806485279; // Boltzmann's Constant (J / K)
 constexpr double oneSixth = 1.0/6.0;
 
-class System 
+class System2 
 {
-    private:
-        simulator_config config;  // system configuration
-        const double dt;              // time step
+    protected:
+        const simulator_config config;// system configuration
+        const CubicBox box;
+        const double rho;             // density (constant)
+        const double rhokB;           // density * boltzmann's constant
         const double ecut;            // potential energy at cutoff
-        const double entot;           // instantaneous total energy (ke + pe)
         const double etail;           // energy tail correction
+        const double ptail;           // pressure tail correction
+        const double rcut2;           // rcut*rcut
+        const double rlist;           // n
+        const int natoms;             // number of atoms in system
+        const double dt;              // time step
         const double halfdt;          // 0.5 * dt
         const double halfdt2;         // 0.5 * dt*dt
         const double halfecut;        // 0.5 * ecut
         const double inatomsm1;       // 1.0/natoms - 1.0
         const double i2natoms;        // 1.0(2.0*natoms)
         const double i3natoms;        // 1.0(3.0*natoms)
-        const double ke;              // instantaneous kinetic energy
+        const int nsteps;             // number of steps for simulation to perform
+        const int nsample;            // counter of number of samples
+        double ke;                    // instantaneous kinetic energy
         double pe;                    // instantaneous potential energy
+        double entot;                 // instantaneous total energy (ke + pe)
         double press;                 // instantaneous pressure
-        const double ptail;           // pressure tail correction
-        const double rcut2;           // rcut*rcut
-        const double rho;             // density (constant)
-        const double rhokB;           // density * boltzmann's constant
         double temp;                  // instantaneous temperature
         double vol;                   // volume (constant)
-        const int natoms;             // number of atoms in system
-        int nsample;                  // counter of number of samples
-        const int nsteps;             // number of steps for simulation to perform
-        NeighborList nlist;
+        std::array<int, 2> nlist;     // neighbor list
+        vector <Vec3> forces;         // forces
+        vector <Vec3> velocities;     // velocities
+        vector <Vec3> positions;      // positions
         Rdf rdf;
         ThermodynamicVariable KineticEnergy;
         ThermodynamicVariable PotentialEnergy;
@@ -90,9 +93,6 @@ class System
         ThermodynamicVariable Temperature;
         ThermodynamicVariable TotalEnergy;
         Thermostat tstat;
-        vector <Vec3> f; // forces
-        vector <Vec3> v; // velocities
-        vector <Vec3> x; // positions
         Velocity vel;
         XDRFILE *xd;
         std::chrono::time_point<std::chrono::high_resolution_clock> prev_time_point;
@@ -100,8 +100,8 @@ class System
         sycl::queue q;
         #endif
     public:
-        System(simulator_config conf, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
-        void Initialize(simulator_config conf, int natoms, int nsteps, double rho, double rcut, double rlist, double temp, double dt, double mindist, double maxtries, string pdbfile, double reft, double coll_freq, string xtcfile, int rdf_nbins, string rdf_outfile, int v_nbins, double v_max, double v_min, string v_outfile);
+        System(simulator_config conf);
+        void Initialize();
         void UpdateNeighborListHostCPU();
         void CalcForceHostCPU();
         void IntegrateHostCPU(int a, bool tcoupl);
@@ -116,12 +116,13 @@ class System
         void PrintAverages();
         void PrintHeader();
         void Sample();
-        void SampleRdf();
+        void SampleRdf()s;
         void SampleVel();
         void WriteXTC(int step);
         int GetTime();
         void ResetTimer();
-        CubicBox box;
+        
+    class friend Simulator;
 };
 
 #ifdef USE_ONEAPI

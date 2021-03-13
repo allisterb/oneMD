@@ -26,11 +26,9 @@
 
 #include "Vec3.hh"
 
-using namespace std;
-
 class ThermodynamicVariable {
     private:
-        vector <double> all;
+        std::vector <double> all;
         double avg;
         double error;
     public:

@@ -27,7 +27,6 @@ typedef struct
     bool tcoupl;
     double coll_freq;
     double reft;
-    std::string dordfstr;
     bool dordf;
     int rdf_nbins;
     std::string rdf_outfile;
