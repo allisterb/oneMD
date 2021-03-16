@@ -45,9 +45,9 @@ int main (int argc, char *argv[])
     cmd.add(tsdeltaArg);
     cmd.add(debugLogLevelArg);
     cmd.parse(argc, argv);
-    auto debugLog = debugArg.getValue();
+    Simulator::debug_log = debugArg.getValue();
     Simulator::debug_log_level = debugLogLevelArg.getValue();
-    if (debugLog) {
+    if (Simulator::debug_log) {
       set_level(level::debug);
       config.debug = true;
       info("Debug-level logging enabled. Debug log level is {}.", Simulator::debug_log_level);

@@ -477,8 +477,10 @@ void System::UpdateNeighborListCPU()
                 auto b = box_a[0];
                 if (i < j) 
                 {   
-                    if (distance2(x_host_a[i], x_host_a[j], b) < cut)
+                    auto d = distance2(x_host_a[i], x_host_a[j], b);
+                    if (d < cut)
                     {
+                        printijdd2(idx, "Including this atom at distance", d);
                         n_host_a[i][j] = 1;
                     }
 
