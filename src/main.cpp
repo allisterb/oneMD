@@ -28,7 +28,7 @@ int main (int argc, char *argv[])
   {  
     CmdLine cmd("oneMD is a data-parallel molecular dynamics simulator for Intel oneAPI.", ' ', "0.1", true);
     UnlabeledValueArg<string> simArg("simulator","Name of simulator to run. Defaults to LJ (Lennard-Jones) atoms in cubic box.", false, "lj", "string", cmd);
-    ValueArg<string> devArg("", "device","Name of hardware device to run simulation on. Can be host_cpu, cpu, gpu, or fpga. Default is host_cpu. Alternatively use the bool flag selectors e.g. -0 or -1.", false, "HOST_CPU", "string");
+    ValueArg<string> devArg("", "device","Name of hardware device or parallel computing framework to run simulation on. Can be openmp, cpu, gpu, or fpga. Default is openmp. Alternatively use the bool flag selectors e.g. -0 or -1.", false, "OPENMP", "string");
     ValueArg<string> configArg("","config","Name of configuration file for simulation,",false,"","string");
     ValueArg<int> ndArg("", "nd","Number of dimensions for simulation from 1-3. Default is 3.",false, 3,"integer");
     ValueArg<int> npArg("", "np","Number of particles for simulation. Default is 100",false, 100,"integer");
@@ -36,7 +36,7 @@ int main (int argc, char *argv[])
     ValueArg<double> tsdeltaArg("", "dt","Timestep delta in seconds for simulation. Default is 0.005.",false, 0.005, "double");
     SwitchArg debugArg("d","debug","Enable debug logging.", cmd, false);
     ValueArg<int> debugLogLevelArg("l", "debug-level","Debug logging level. Default is 1.",false, 1,"integer");
-    SwitchArg hostCPUDeviceArg("0","host-cpu","Select the host CPU device.", cmd, false);
+    SwitchArg openmpDeviceArg("0","openmp","Select the OpenMP parallel processing framework.", cmd, false);
     SwitchArg cpuDeviceArg("1","cpu","Select the SYCL CPU device.", cmd, false);
     cmd.add(devArg);
     cmd.add(ndArg);
@@ -58,9 +58,9 @@ int main (int argc, char *argv[])
     auto ts = tsArg.getValue();
     auto ts_delta = tsdeltaArg.getValue();
     auto device = Device::_from_string(Util::upper(devArg.getValue()).c_str());
-    if (hostCPUDeviceArg.getValue())
+    if (openmpDeviceArg.getValue())
     {
-      device = Device::HOST_CPU;
+      device = Device::OPENMP;
     }
     else if (cpuDeviceArg.getValue())
     {
@@ -103,7 +103,7 @@ int main (int argc, char *argv[])
   {
     switch (config.device)
     {
-      case Device::HOST_CPU:
+      case Device::OPENMP:
         sim->Initialize();
         sim->HostCPURun();
         return 0;

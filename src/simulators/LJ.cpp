@@ -27,7 +27,7 @@ conf(c)
 #ifdef USE_ONEAPI
     switch(c.device)
     {
-        case Device::HOST_CPU:
+        case Device::OPENMP:
             q = sycl::host_selector{};
             break;
         case Device::CPU:
@@ -560,7 +560,7 @@ LJ::LJ(simulator_config config, Device device) :
 #ifdef USE_ONEAPI
     switch(config.device)
     {
-        case Device::HOST_CPU:
+        case Device::OPENMP:
             q = sycl::host_selector{};
             break;
         case Device::CPU:

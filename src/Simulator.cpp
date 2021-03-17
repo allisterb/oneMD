@@ -22,8 +22,6 @@
 #include "Simulator.hh"
 #include "xdrfile.h"
 
-NotImplementedException::NotImplementedException() : std::logic_error("Not yet implemented.") { };
-
 bool Simulator::debug_log = false;
 int Simulator::debug_log_level = 0;
 
@@ -53,7 +51,7 @@ simulator_config Simulator::default_config()
 { 
   return {
     .debug = false,
-    .device = Device::HOST_CPU,
+    .device = Device::OPENMP,
     .mindist = 1.0,
     .maxtries = 10e6,
     .dt = 0.005,

@@ -2,17 +2,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.10.2)
 
 project(oneMD DESCRIPTION "Data-parallel molecular dynamics simulator for Intel oneAPI." LANGUAGES CXX C)
 
-message(STATUS "C++ compiler                 = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )
-message(STATUS "CMAKE_CXX_FLAGS_RELEASE      = ${CMAKE_CXX_FLAGS_RELEASE}" )
-message(STATUS "CMAKE_CXX_FLAGS_DEBUG        = ${CMAKE_CXX_FLAGS_DEBUG}" )
-message(STATUS "CMAKE_SYSTEM_NAME            = ${CMAKE_SYSTEM_NAME}" )
-message(STATUS "CMAKE_SYSTEM_PROCESSOR       = ${CMAKE_SYSTEM_PROCESSOR}" )
-if(APPLE)
-  message(STATUS "CMAKE_OSX_SYSROOT          = ${CMAKE_OSX_SYSROOT}" )
-  message(STATUS "CMAKE_OSX_ARCHITECTURES    = ${CMAKE_OSX_ARCHITECTURES}" )
-  message(STATUS "CMAKE_OSX_DEPLOYMENT_TARGET= ${CMAKE_OSX_DEPLOYMENT_TARGET}" )
-endif()
-
 if(DEFINED ENV{ONEAPI_ROOT})
   set(USE_ONEAPI ON)
 else()
@@ -92,6 +81,7 @@ set (SIMS_SRC src/simulators/JB.cpp src/simulators/LJ.cpp)
 
 set (SRC 
     ext/inih/cpp/INIReader.cpp
+    src/Exceptions.cpp
     src/Simulator.cpp 
     src/Vec3.cpp 
     src/CubicBox.cpp 
@@ -199,4 +189,15 @@ if (Boost_FOUND)
   endif()
 else()
   message(WARNING "Not building ljmd test sim since Boost was not found.")
+endif()
+
+message(STATUS "C++ compiler                 = ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}" )
+message(STATUS "CMAKE_CXX_FLAGS_RELEASE      = ${CMAKE_CXX_FLAGS_RELEASE}" )
+message(STATUS "CMAKE_CXX_FLAGS_DEBUG        = ${CMAKE_CXX_FLAGS_DEBUG}" )
+message(STATUS "CMAKE_SYSTEM_NAME            = ${CMAKE_SYSTEM_NAME}" )
+message(STATUS "CMAKE_SYSTEM_PROCESSOR       = ${CMAKE_SYSTEM_PROCESSOR}" )
+if(APPLE)
+  message(STATUS "CMAKE_OSX_SYSROOT          = ${CMAKE_OSX_SYSROOT}" )
+  message(STATUS "CMAKE_OSX_ARCHITECTURES    = ${CMAKE_OSX_ARCHITECTURES}" )
+  message(STATUS "CMAKE_OSX_DEPLOYMENT_TARGET= ${CMAKE_OSX_DEPLOYMENT_TARGET}" )
 endif()

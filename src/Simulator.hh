@@ -26,29 +26,19 @@
 #include <oneapi/dpl/algorithm>
 #include <oneapi/dpl/execution>
 #include <oneapi/dpl/iterator>
+using namespace oneapi;
 #endif
 
 #include <string>
 #include <chrono>
+#include "common.hh"
 #include "Device.hh"
 #include "simulator_config.h"
 #include "spdlog/spdlog.h"
 
-#ifdef USE_ONEAPI
-#include "dpc_common.hpp"
-#include <CL/sycl.hpp>
-using namespace oneapi;
-#endif
-
 using namespace std;
 using namespace std::chrono; 
 using namespace spdlog;
-
-class NotImplementedException : public std::logic_error
-{
-  public: 
-    NotImplementedException();
-};
 
 class Simulator {
   private:

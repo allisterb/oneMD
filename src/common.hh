@@ -7,6 +7,8 @@
 #include "dpc_common.hpp"
 #include <CL/sycl.hpp>
 
+#include "Exceptions.hh"
+
 #define SYCL_LINK SYCL_EXTERNAL
 #define kernel_printf sycl::ONEAPI::experimental::printf
 #else
