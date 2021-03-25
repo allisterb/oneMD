@@ -25,19 +25,34 @@ System::System(simulator_config c, int natoms, int nsteps, double rho, double rc
 conf(c)
 {
 #ifdef USE_ONEAPI
+    // This exception handler with catch async exceptions
+    auto exception_handler = [&](sycl::exception_list exceptions) {
+        for(std::exception_ptr const& e : exceptions) {
+            try 
+            {
+                std::rethrow_exception(e);
+            } 
+            catch (sycl::exception const& e) 
+            {
+                error("Caught asynchronous SYCL exception:\n{}", e.what());
+                std::terminate();
+            }
+        }
+    };
     switch(c.device)
     {
         case Device::OPENMP:
-            q = sycl::host_selector{};
+            q = sycl::queue(sycl::host_selector {}, exception_handler);
             break;
         case Device::CPU:
-            q = sycl::cpu_selector{};
+            q = sycl::queue(sycl::cpu_selector{}, exception_handler);
             break;
         case Device::GPU:
-            q = sycl::gpu_selector{};
+            q = sycl::queue(sycl::gpu_selector{}, exception_handler);
             break;
         default:
             throw new NotImplementedException();
+        //q.
     }
 #endif
 }
@@ -452,46 +467,75 @@ void System::IntegrateHostCPU(int a, bool tcoupl)
 
 #ifdef USE_ONEAPI
 void System::UpdateNeighborListCPU()
-{
-    auto n = static_cast<size_t>(natoms);
-    auto cut = this->nlist.rlist;
-    std::for_each(dpl::execution::par, this->nlist.list.begin(), this->nlist.list.end(), 
-        [n](vector <int> &v){
-            v.resize(n);
-        });
-    {
-        sycl::buffer<int, 2> n_host_buf (&this->nlist.list[0][0], sycl::range(n, n));
-        sycl::buffer<Vec3, 1> x_host_buf(&x[0], sycl::range(n));
-        sycl::buffer<sycl::double3, 1> box_buf(&this->box, sycl::range(1));
+{                        
+    size_t n = natoms;
+    auto b = this->box;
+    auto dim = b[0];
+    sycl::buffer<Vec3, 1> x_host_buf_1(&x[0], sycl::range(n));
+    auto k2s = q.submit([&](sycl::handler &h) {
+        #include "kernel_logger.hpp"
+        __kernel_logger("initial_conditions")
+        auto x_a = x_host_buf_1.get_access<sycl::access::mode::write>(h);
         
-        q.submit([&](sycl::handler &h) {
-            #include "kernel_logger.hpp"
-            __kernel_logger("update_neighbor")
-            auto n_host_a = n_host_buf.get_access<sycl::access::mode::write>(h);
-            auto x_host_a = x_host_buf.get_access<sycl::access::mode::read>(h);
-            auto dim = this->box[0];
-            auto box_a = box_buf.get_access<sycl::access::mode::read>(h);
-            h.parallel_for(sycl::range(n, n), [=](sycl::id<2> idx) {
-                auto i = idx[0];
-                auto j = idx[1];
-                auto b = box_a[0];
-                if (i < j) 
-                {   
-                    auto d = distance2(x_host_a[i], x_host_a[j], b);
-                    if (d < cut)
+        h.single_task([=] {
+            for (int i = 0; i < n; i++)
+            {
+                int retries = 0;
+                retrypoint:
+                    oneapi::mkl::rng::device::philox4x32x10<3> engine(1, (i + retries) * 3);
+                    oneapi::mkl::rng::device::uniform distr(-dim/2.0, dim/2.0);
+                
+                    auto rr = mkl::rng::device::generate(distr, engine);
+                    printd2("Got random distance ", rr);
+                    for (int j = 0; j < i; j++)
                     {
-                        printijdd2(idx, "Including this atom at distance", d);
-                        n_host_a[i][j] = 1;
+                        
+                        printd("foo");
                     }
-
-                }
-                            
-            });
+            }
         });
-    }
+    });
+
+
+    // Create an object of distribution (by default float, a = 0.0f, b = 1.0f)
+    //oneapi::mkl::rng::device::uniform distrx(-box[X]/2.0, box[X]/2.0);
+    //oneapi::mkl::rng::device::uniform distry(-box[Y]/2.0, box[Y]/2.0);
+    //oneapi::mkl::rng::device::uniform distrz(-box[Y]/2.0, box[Y]/2.0);
+    //oneapi::mkl::rng::device::gaussian distrvel(0.0, sqrt(temp));
+    //Vec3 sumv(0.0.0)
+    dpc_common::TimeInterval timer;
+    //size_t n = natoms;
+    auto cut = this->conf.nlist;
+    int* neighbors = sycl::malloc_device<int>(n * n, q);
+    sycl::buffer<int, 2> n_host_buf (neighbors, sycl::range(n, n));
+    sycl::buffer<Vec3, 1> x_host_buf(&x[0], sycl::range(n));        
+    auto k1 = q.submit([&](sycl::handler &h) {
+        #include "kernel_logger.hpp"
+        __kernel_logger("update_neighbor")
+        auto n_a = n_host_buf.get_access<sycl::access::mode::write>(h);
+        auto x_a = x_host_buf.get_access<sycl::access::mode::read>(h);
+        h.parallel_for(sycl::range(n, n), [=](sycl::id<2> idx) {
+            auto i = idx[0];
+            auto j = idx[1];
+            if (i < j) 
+            {   
+                auto d = distance2(x_a[i], x_a[j], b);
+                if (d < cut)
+                {
+                    printijdd2(idx, "Including this atom at distance ", d);
+                    n_a[i][j] = 1;
+                }
+                else
+                {
+                    n_a[i][j] = 0;
+                }
+            }       
+        });
+    });
+    info("Computed neighbor lists in {:03.2f}s.", timer.Elapsed());
+
     exit(0);
     
-
     for (int i = 0; i < x.size()-1; i++)
     {
         for (unsigned int j = i+1; j < x.size(); j++)
@@ -507,6 +551,7 @@ void System::UpdateNeighborListCPU()
 
 void System::CalcForceCPU()
 {
+    //oneapi::mkl::rng::device::philox4x32x10 engine(seed, id * m);
     //std::fill_n(dpl::execution::par_unseq, System::f.begin(), System::f.size(), 0.0);
     int ncut = 0;
     double pe = 0.0;
